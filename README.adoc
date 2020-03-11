@@ -1,0 +1,101 @@
+
+== Fields
+
+Before we list the available fields, let's have a look at which properties a field can have:
+
+=== Indexed
+The field gets added to index so that you can search for it.
+But this does not mean that you can retrieve fields's value (again) from Lucene.
+
+Of course its value additionally can also be stored (see below), but 'indexed' just means that you can search for it.
+
+E.g. article content mostly just gets indexed so that it can be searched, but stored somewhere else (e.g. the
+Wikipedia page gets displayed).
+
+=== Stored
+The field gets saved (but _not_ indexed) so that its value can be retrieved from Lucene.
+
+It gets added to Lucene's data store but not (necessarily) to its index.
+
+Only if you store a value it is included in search result document.
+
+If you also want to be able to search for this field, you additionally have to index it, see above.
+
+E.g. the database id for this data set. The database id is only needed to retrieve a search result's (hit's) data
+from database, but you don't search for it (with Lucene).
+
+*The field settings below are only senseful for indexed fields:*
+
+=== Tokenized
+
+Fields with multiple words get split into single words.
+
+Needed if you want to find e.g. the field 'The lazy fox' by searching for 'fox' or 'lazy'.
+
+Otherwise field gets indexed as a single value and you would have to search for 'The lazy fox' to find this field.
+
+Except for keywords indexed text is also tokenized.
+
+It's the task of analyzers to tokenize strings. How analyzers do this see below.
+
+=== Normalized
+
+Normalization data. This data is what is used for boosting and field-length normalization.
+
+
+*Now let's look at available field types and which of above properties they have:*
+
+=== Field types
+
+.Table Field types
+
+|===
+| Field name | Stored | Indexed (= searchable?) | Tokenized (= split in parts) | Normalized (= ?) | Term vectors (=?) | Description
+
+| TextField | Settable. Select TYPE_NOT_STORED or TYPE_STORED | x | x | x | - | String indexed for full text search. +
+For example this would be used on a 'body' field, that contains the bulk of a document's text.
+
+| StringField | Settable. Select TYPE_NOT_STORED or TYPE_STORED | x | - | - | ? | String indexed verbatim as a single
+token. +
+The entire string value is indexed as a single token. For example this might be used for a 'country' field or
+an 'id' field. If you also need to sort on this field, separately add a SortedDocValuesField to your document.
+
+| IntPoint / LongPoint / FloatPoint / DoublePoint | - | x | x | -(?) | -(?) | Int / long / float / double indexed for
+exact/range queries. +
+An indexed field for fast range filters. If you also need to store the value, you should add a separate StoredField
+instance. +
+Finding all documents within an N-dimensional shape or range at search time is efficient. Multiple values for the same field in one document is allowed.
+
+| SortedDocValuesField |  |  |  |  |  | byte[] indexed column-wise for sorting/faceting.
+
+| SortedSetDocValuesField |  |  |  |  |  | SortedSet<byte[]> indexed column-wise for sorting/faceting.
+
+| NumericDocValuesField |  |  |  |  |  | long indexed column-wise for sorting/faceting.
+
+| SortedNumericDocValuesField |  |  |  |  |  | SortedSet<long> indexed column-wise for sorting/faceting.
+
+| StoredField | x | x? | x? | - | -? | Stored-only value for retrieving in summary results. +
+A field whose value is stored so that IndexSearcher IndexReader will return the field and its value.
+
+|===
+
+
+== Analyzers
+
+https://lucene.apache.org/core/8_4_0/core/org/apache/lucene/analysis/package-summary.html
+
+Analyzers tokenize, stem and filter plain text / input for indexing and querying. (Not all analyzer make use of all
+these three )
+
+Tokenization is the process of breaking input text into small indexing elements – tokens.
+
+* Stemming – Replacing words with their stems. For instance with English stemming "bikes" is replaced with "bike";
+now query "bike" can find both documents containing "bike" and those containing "bikes".
+
+* Stop Words Filtering – Common words like "the", "and" and "a" rarely add any value to a search. Removing them
+shrinks the index size and increases performance. It may also reduce some "noise" and actually improve search quality.
+
+* Text Normalization – Stripping accents and other character markings can make for better searching.
+
+* Synonym Expansion – Adding in synonyms at the same token position as the current word can mean better matching when
+users search with words in the synonym set.
