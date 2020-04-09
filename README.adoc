@@ -99,3 +99,8 @@ shrinks the index size and increases performance. It may also reduce some "noise
 
 * Synonym Expansion – Adding in synonyms at the same token position as the current word can mean better matching when
 users search with words in the synonym set.
+
+
+== Sorting
+
+You can only sort on indexed (string) fields that are not tokenized!
