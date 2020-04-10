@@ -1,6 +1,8 @@
 
 buildscript {
 
+    apply(from = "versions.gradle")
+
     repositories {
         google()
         jcenter()
@@ -13,16 +15,15 @@ buildscript {
 }
 
 
-allprojects {
-    group = "net.dankito.search.lucene"
-    version = "1.0.0-SNAPSHOT"
-
-
-    tasks.register<DependencyReportTask>("allDeps") { } // to have a simple way to print all dependencies to console
+val commonScriptsFile = File(File(project.gradle.gradleUserHomeDir, "scripts"), "commonScripts.gradle")
+if (commonScriptsFile.exists()) {
+    apply(from = commonScriptsFile)
 }
 
 
+
 subprojects {
+    this.group = rootProject.group
 
     repositories {
         mavenCentral()

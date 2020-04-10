@@ -1,0 +1,9 @@
+rootProject.group ="net.dankito.utils"
+rootProject.version = "0.5.0-SNAPSHOT"
+
+ext {
+    artifactName = "lucene"
+
+    sourceCodeRepositoryBaseUrl = "github.com/dankito/LuceneUtils"
+    projectDescription = "Library that facilitates the usage of Lucene, e.g. to index fields, create queries, map search results, additional field types like Boolean and Date field, ..."
+}

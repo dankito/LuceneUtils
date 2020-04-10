@@ -36,8 +36,8 @@ val mockitoVersion = "2.22.0"
 dependencies {
     api("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
 
-    implementation("org.apache.lucene:lucene-analyzers-common:$luceneVersion")
-    implementation("org.apache.lucene:lucene-queryparser:$luceneVersion")
+    api("org.apache.lucene:lucene-analyzers-common:$luceneVersion")
+    api("org.apache.lucene:lucene-queryparser:$luceneVersion")
 
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
