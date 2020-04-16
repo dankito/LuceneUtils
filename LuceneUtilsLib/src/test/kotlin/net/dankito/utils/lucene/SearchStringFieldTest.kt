@@ -15,11 +15,29 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	}
 
 
+	/**
+	 * Notabene that case-insensitive search does not work for StringFields
+	 */
+
+	@Test
+	fun `TermQuery - case-insensitive does not work`() {
+
+		// given
+		indexStringField(FieldName, "Mahatma Gandhi")
+
+		// when
+		val query = TermQuery(Term(FieldName, "mahatma gandhi"))
+		val result = search(query)
+
+		// then
+		assertThat(result).isEmpty()
+	}
+
 	@Test
 	fun `TermQuery - only whole string matches`() {
 
 		// given
-		index(FieldName, "Mahatma Gandhi")
+		indexStringField(FieldName, "Mahatma Gandhi")
 
 		// when
 		val query = TermQuery(Term(FieldName, "Mahatma Gandhi"))
@@ -33,7 +51,7 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	fun `TermQuery - single term does not match`() {
 
 		// given
-		index(FieldName, "Mahatma Gandhi")
+		indexStringField(FieldName, "Mahatma Gandhi")
 
 		// when
 		val query = TermQuery(Term(FieldName, "Gandhi"))
@@ -47,7 +65,7 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	fun `PrefixQuery ('startsWith()') matches`() {
 
 		// given
-		index(FieldName, "Mahatma Gandhi")
+		indexStringField(FieldName, "Mahatma Gandhi")
 
 		// when
 		val query = PrefixQuery(Term(FieldName, "Mahatma"))
@@ -61,7 +79,7 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	fun `WildcardQuery ('contains()') matches`() {
 
 		// given
-		index(FieldName, "Mahatma Gandhi")
+		indexStringField(FieldName, "Mahatma Gandhi")
 
 		// when
 		val query = WildcardQuery(Term(FieldName, "*Gand*"))
@@ -75,7 +93,7 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	fun `WildcardQuery ('endsWith()') matches`() {
 
 		// given
-		index(FieldName, "Mahatma Gandhi")
+		indexStringField(FieldName, "Mahatma Gandhi")
 
 		// when
 		val query = WildcardQuery(Term(FieldName, "*Gandhi"))
@@ -90,7 +108,7 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	fun `Filename startsWith`() {
 
 		// given
-		index(FieldName, Filename)
+		indexStringField(FieldName, Filename)
 
 		// when
 		val query = queries.startsWith(FieldName, "secret")
@@ -104,7 +122,7 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	fun `Filename contains`() {
 
 		// given
-		index(FieldName, Filename)
+		indexStringField(FieldName, Filename)
 
 		// when
 		val query = queries.contains(FieldName, "networked")
@@ -118,7 +136,7 @@ open class SearchStringFieldTest : LuceneTestBase() {
 	fun `Filename extension`() {
 
 		// given
-		index(FieldName, Filename)
+		indexStringField(FieldName, Filename)
 
 		// when
 		val query = queries.endsWith(FieldName, ".pdf")

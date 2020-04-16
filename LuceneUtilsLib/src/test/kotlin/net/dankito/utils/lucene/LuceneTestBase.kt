@@ -45,7 +45,11 @@ abstract class LuceneTestBase {
 	}
 
 
-	protected open fun index(name: String, value: String, store: Boolean = true) {
+	protected open fun indexTextField(name: String, value: String, store: Boolean = true) {
+		index(fields.textField(name, value, store))
+	}
+
+	protected open fun indexStringField(name: String, value: String, store: Boolean = true) {
 		index(fields.stringField(name, value, store))
 	}
 
