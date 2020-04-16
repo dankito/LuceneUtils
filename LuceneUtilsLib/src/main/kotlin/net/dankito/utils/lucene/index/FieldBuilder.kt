@@ -10,6 +10,16 @@ open class FieldBuilder {
 
 	@JvmOverloads
 	open fun fullTextSearchField(name: String, value: String, store: Boolean = false): TextField {
+		return textField(name, value, store)
+	}
+
+	@JvmOverloads
+	open fun nullableFullTextSearchField(name: String, value: String?, store: Boolean = false): TextField? {
+		return nullableTextField(name, value, store)
+	}
+
+	@JvmOverloads
+	open fun textField(name: String, value: String, store: Boolean = false): TextField {
 		return if (store) {
 			storedTextField(name, value)
 		}
@@ -19,8 +29,8 @@ open class FieldBuilder {
 	}
 
 	@JvmOverloads
-	open fun nullableFullTextSearchField(name: String, value: String?, store: Boolean = false): TextField? {
-		return if (value == null) null else fullTextSearchField(name, value, store)
+	open fun nullableTextField(name: String, value: String?, store: Boolean = false): TextField? {
+		return if (value == null) null else textField(name, value, store)
 	}
 
 	open fun storedTextField(name: String, value: String): TextField {
