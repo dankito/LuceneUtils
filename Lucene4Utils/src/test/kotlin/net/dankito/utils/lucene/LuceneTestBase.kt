@@ -54,11 +54,11 @@ abstract class LuceneTestBase {
 
 
 	protected open fun search(query: Query): List<SearchResult> {
-		val searcher = Searcher(indexDirectory)
+		Searcher(indexDirectory).use { searcher ->
+			val searchResults = searcher.search(query, 10)
 
-		val searchResults = searcher.search(query, 10)
-
-		return searchResults.hits
+			return searchResults.hits
+		}
 	}
 
 }

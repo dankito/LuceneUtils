@@ -5,9 +5,14 @@ import org.apache.lucene.search.*
 import org.apache.lucene.store.Directory
 
 
-abstract class SearcherBase(protected val directory: Directory) {
+abstract class SearcherBase(protected val directory: Directory) : AutoCloseable {
 
 	protected abstract fun getCountTotalHits(topDocs: TopDocs): Long
+
+
+	override fun close() {
+		directory.close()
+	}
 
 
 	@JvmOverloads
