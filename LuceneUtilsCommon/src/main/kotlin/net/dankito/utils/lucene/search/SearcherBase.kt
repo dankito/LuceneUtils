@@ -5,13 +5,13 @@ import org.apache.lucene.search.*
 import org.apache.lucene.store.Directory
 
 
-abstract class SearcherBase {
+abstract class SearcherBase(protected val directory: Directory) {
 
 	protected abstract fun getCountTotalHits(topDocs: TopDocs): Long
 
 
 	@JvmOverloads
-	open fun search(directory: Directory, query: Query, countMaxResults: Int = 10_000,
+	open fun search(query: Query, countMaxResults: Int = 10_000,
 					sortFields: List<SortField> = listOf()): SearchResults {
 		val reader = DirectoryReader.open(directory)
 		val searcher = IndexSearcher(reader)

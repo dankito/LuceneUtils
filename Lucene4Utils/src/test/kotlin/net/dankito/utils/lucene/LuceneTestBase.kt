@@ -4,12 +4,10 @@ import net.dankito.utils.io.FileUtils
 import net.dankito.utils.lucene.index.DocumentsWriter
 import net.dankito.utils.lucene.index.FieldBuilder
 import net.dankito.utils.lucene.search.QueryBuilder
-import org.apache.lucene.document.Document
-import org.apache.lucene.index.DirectoryReader
+import net.dankito.utils.lucene.search.SearchResult
+import net.dankito.utils.lucene.search.Searcher
 import org.apache.lucene.index.IndexableField
-import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.Query
-import org.apache.lucene.store.FSDirectory
 import org.junit.jupiter.api.AfterEach
 
 
@@ -55,17 +53,12 @@ abstract class LuceneTestBase {
 	}
 
 
-	protected open fun search(query: Query): List<Document> {
-		val reader = DirectoryReader.open(FSDirectory.open(indexDirectory))
-		val searcher = IndexSearcher(reader)
+	protected open fun search(query: Query): List<SearchResult> {
+		val searcher = Searcher(indexDirectory)
 
-		val scoreDocs = searcher.search(query, 10).scoreDocs
+		val searchResults = searcher.search(query, 10)
 
-		val result = scoreDocs.map { searcher.doc(it.doc) }
-
-		reader.close()
-
-		return result
+		return searchResults.hits
 	}
 
 }
