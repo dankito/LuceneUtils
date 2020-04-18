@@ -69,6 +69,15 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
         writer.deleteDocuments(Term(idFieldName, idFieldValue))
     }
 
+    /**
+     * NOTE: if you want to maximize search performance, you can optionally call forceMerge here.
+     * This can be a terribly costly operation, so generally it's only worth it when your index is relatively
+     * static (ie you're done adding documents to it)
+     */
+    open fun optimizeIndex() {
+        writer.forceMerge(1)
+    }
+
 
     protected open fun createIdField(fieldName: String, value: String): IndexableField {
         return StringField(fieldName, value, Field.Store.YES)
