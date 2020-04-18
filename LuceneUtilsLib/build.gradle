@@ -1,0 +1,45 @@
+plugins {
+    id "kotlin"
+}
+
+
+sourceCompatibility = 1.7
+
+compileKotlin.kotlinOptions.jvmTarget = "1.6"
+
+compileTestKotlin.kotlinOptions.jvmTarget = "1.6"
+
+
+ext.artifactName = "lucene-utils"
+
+
+sourceSets {
+    main {
+        kotlin {
+            srcDirs += [ "../LuceneUtilsCommon/src/main/kotlin" ]
+        }
+        resources {
+            srcDirs += [ "../LuceneUtilsCommon/src/main/resources" ]
+        }
+    }
+    test {
+        kotlin {
+            srcDirs += [ "../LuceneUtilsCommon/src/test/kotlin" ]
+        }
+        resources {
+            srcDirs += [ "../LuceneUtilsCommon/src/test/resources" ]
+        }
+    }
+}
+
+
+dependencies {
+    // LuceneUtilsCommon is only needed at compile time; for runtime / jar we package its sources with sourceSets settings above
+    compileOnly project(":LuceneUtilsCommon")
+
+    api "org.apache.lucene:lucene-analyzers-common:$luceneVersion"
+    api "org.apache.lucene:lucene-queryparser:$luceneVersion"
+
+
+    testImplementation project(path: ":LuceneUtilsCommon", configuration: "tests")
+}

@@ -2,8 +2,15 @@ rootProject.group ="net.dankito.utils"
 rootProject.version = "0.5.1-SNAPSHOT"
 
 ext {
-    artifactName = "lucene"
-
     sourceCodeRepositoryBaseUrl = "github.com/dankito/LuceneUtils"
     projectDescription = "Library that facilitates the usage of Lucene, e.g. to index fields, create queries, map search results, additional field types like Boolean and Date field, ..."
+
+    kotlinVersion = "1.3.71"
+
+    luceneVersion = "8.4.1"
+    latestLuceneVersionCompatibleWithAndroid = "4.7.2"
+
+    junitVersion = "5.5.2"
+    assertJVersion = "3.12.2"
+    mockitoVersion = "2.22.0"
 }
