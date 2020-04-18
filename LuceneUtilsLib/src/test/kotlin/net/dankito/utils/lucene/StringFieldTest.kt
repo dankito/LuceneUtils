@@ -8,7 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 
-open class SearchStringFieldTest : LuceneTestBase() {
+open class StringFieldTest : LuceneTestBase() {
 
 	companion object {
 		val Filename = "secrets_and_lies_digital_security_in_a_networked_world.pdf"
