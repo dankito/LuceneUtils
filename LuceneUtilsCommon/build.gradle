@@ -24,6 +24,8 @@ dependencies {
     testApi "org.assertj:assertj-core:$assertJVersion"
     testApi "org.mockito:mockito-core:$mockitoVersion"
 
+    testApi "net.dankito.utils:java-utils:$javaUtilsVersion"
+
     testCompileOnly "org.apache.lucene:lucene-analyzers-common:$latestLuceneVersionCompatibleWithAndroid"
     testCompileOnly "org.apache.lucene:lucene-queryparser:$latestLuceneVersionCompatibleWithAndroid"
 }

@@ -8,7 +8,18 @@ import org.apache.lucene.index.IndexableField
 import org.apache.lucene.index.Term
 
 
-open class DocumentsWriter {
+open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseable {
+
+    override fun close() {
+        val analyzer = writer.analyzer
+
+        writer.close()
+
+        writer.directory.close()
+
+        analyzer.close()
+    }
+
 
     open fun createDocument(fields: List<IndexableField>): Document {
         val document = Document()
@@ -20,8 +31,12 @@ open class DocumentsWriter {
         return document
     }
 
-    open fun saveDocument(writer: IndexWriter, vararg fields: IndexableField): Document {
-        val document = createDocument(fields.toList())
+    open fun saveDocument(vararg fields: IndexableField): Document {
+        return saveDocument(fields.toList())
+    }
+
+    open fun saveDocument(fields: List<IndexableField>): Document {
+        val document = createDocument(fields)
 
         writer.addDocument(document)
 
@@ -30,7 +45,7 @@ open class DocumentsWriter {
         return document
     }
 
-    open fun updateDocument(writer: IndexWriter, idFieldName: String, idFieldValue: String, vararg fields: IndexableField): Document {
+    open fun updateDocument(idFieldName: String, idFieldValue: String, vararg fields: IndexableField): Document {
         val fieldsIncludingIdField = mutableListOf(createIdField(idFieldName, idFieldValue))
         fieldsIncludingIdField.addAll(fields.toList())
 
@@ -45,12 +60,12 @@ open class DocumentsWriter {
         return document
     }
 
-    open fun updateDocumentForNonNullFields(writer: IndexWriter, idFieldName: String, idFieldValue: String, vararg fields: IndexableField?): Document {
-        return updateDocument(writer, idFieldName, idFieldValue, *fields.filterNotNull().toTypedArray())
+    open fun updateDocumentForNonNullFields(idFieldName: String, idFieldValue: String, vararg fields: IndexableField?): Document {
+        return updateDocument(idFieldName, idFieldValue, *fields.filterNotNull().toTypedArray())
     }
 
 
-    open fun deleteDocument(writer: IndexWriter, idFieldName: String, idFieldValue: String) {
+    open fun deleteDocument(idFieldName: String, idFieldValue: String) {
         writer.deleteDocuments(Term(idFieldName, idFieldValue))
     }
 
