@@ -1,4 +1,4 @@
-rootProject.group ="net.dankito.utils"
+rootProject.group = "net.dankito.search"
 rootProject.version = "0.5.1-SNAPSHOT"
 
 ext {
