@@ -84,6 +84,8 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
     open fun deleteDocument(idFieldName: String, idFieldValue: String) {
         writer.deleteDocuments(Term(idFieldName, idFieldValue))
+
+        writer.commit()
     }
 
     /**
