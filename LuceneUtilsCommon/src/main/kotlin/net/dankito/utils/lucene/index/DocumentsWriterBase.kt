@@ -64,6 +64,23 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
         return updateDocument(idFieldName, idFieldValue, *fields.filterNotNull().toTypedArray())
     }
 
+    /**
+     * Some of the ugliest code i've ever written. Find a better solution for nestedListObjects: List<List<List<IndexableField>?>?>?
+     */
+    open fun updateDocumentForNonNullFields(idFieldName: String, idFieldValue: String, nestedListObjects: List<List<List<IndexableField>?>?>? = null,
+                                            vararg fields: IndexableField?): Document {
+
+        if (nestedListObjects == null) {
+            return updateDocument(idFieldName, idFieldValue, *fields.filterNotNull().toTypedArray())
+        }
+
+        val allFields = fields.toMutableList()
+
+        allFields.addAll(nestedListObjects.filterNotNull().flatten().filterNotNull().flatten())
+
+        return updateDocument(idFieldName, idFieldValue, *allFields.filterNotNull().toTypedArray())
+    }
+
 
     open fun deleteDocument(idFieldName: String, idFieldValue: String) {
         writer.deleteDocuments(Term(idFieldName, idFieldValue))

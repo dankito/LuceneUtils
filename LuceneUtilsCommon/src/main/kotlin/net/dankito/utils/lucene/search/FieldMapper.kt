@@ -1,13 +1,14 @@
 package net.dankito.utils.lucene.search
 
 import org.apache.lucene.document.Document
+import org.apache.lucene.index.IndexableField
 import java.util.*
 
 
 open class FieldMapper {
 
 	open fun string(document: Document, fieldName: String): String {
-		return document.getField(fieldName).stringValue()
+		return mapField(document, fieldName) { mapToString(it) }
 	}
 
 	open fun string(result: SearchResult, fieldName: String): String {
@@ -23,16 +24,36 @@ open class FieldMapper {
 	}
 
 	open fun nullableString(document: Document, fieldName: String): String? {
-		return document.getField(fieldName)?.stringValue()
+		return mapNullableField(document, fieldName) { mapToString(it) }
 	}
 
 	open fun nullableString(result: SearchResult, fieldName: String): String? {
 		return nullableString(result.document, fieldName)
 	}
 
+	open fun stringList(document: Document, fieldName: String): List<String> {
+		return document.getFields(fieldName).map { mapToString(it) }
+	}
+
+	open fun stringList(result: SearchResult, fieldName: String): List<String> {
+		return stringList(result.document, fieldName)
+	}
+
+	open fun nullableStringList(document: Document, fieldName: String): List<String>? {
+		return document.getFields(fieldName)?.map { mapToString(it) }
+	}
+
+	open fun nullableStringList(result: SearchResult, fieldName: String): List<String>? {
+		return nullableStringList(result.document, fieldName)
+	}
+
+	protected open fun mapToString(field: IndexableField): String {
+		return field.stringValue()
+	}
+
 
 	open fun int(document: Document, fieldName: String): Int {
-		return number(document, fieldName).toInt()
+		return mapField(document, fieldName) { mapToInt(it) }
 	}
 
 	open fun int(result: SearchResult, fieldName: String): Int {
@@ -48,16 +69,36 @@ open class FieldMapper {
 	}
 
 	open fun nullableInt(document: Document, fieldName: String): Int? {
-		return nullableNumber(document, fieldName)?.toInt()
+		return mapNullableField(document, fieldName) { mapToInt(it) }
 	}
 
 	open fun nullableInt(result: SearchResult, fieldName: String): Int? {
 		return nullableInt(result.document, fieldName)
 	}
 
+	open fun intList(document: Document, fieldName: String): List<Int> {
+		return mapFields(document, fieldName) { mapToInt(it) }
+	}
+
+	open fun intList(result: SearchResult, fieldName: String): List<Int> {
+		return intList(result.document, fieldName)
+	}
+
+	open fun nullableIntList(document: Document, fieldName: String): List<Int>? {
+		return document.getFields(fieldName)?.map { mapToInt(it) }
+	}
+
+	open fun nullableIntList(result: SearchResult, fieldName: String): List<Int>? {
+		return nullableIntList(result.document, fieldName)
+	}
+
+	protected open fun mapToInt(field: IndexableField): Int {
+		return mapToNumber(field).toInt()
+	}
+
 
 	open fun long(document: Document, fieldName: String): Long {
-		return number(document, fieldName).toLong()
+		return mapField(document, fieldName) { mapToLong(it) }
 	}
 
 	open fun long(result: SearchResult, fieldName: String): Long {
@@ -73,16 +114,36 @@ open class FieldMapper {
 	}
 
 	open fun nullableLong(document: Document, fieldName: String): Long? {
-		return nullableNumber(document, fieldName)?.toLong()
+		return mapNullableField(document, fieldName) { mapToLong(it) }
 	}
 
 	open fun nullableLong(result: SearchResult, fieldName: String): Long? {
 		return nullableLong(result.document, fieldName)
 	}
 
+	open fun longList(document: Document, fieldName: String): List<Long> {
+		return mapFields(document, fieldName) { mapToLong(it) }
+	}
+
+	open fun longList(result: SearchResult, fieldName: String): List<Long> {
+		return longList(result.document, fieldName)
+	}
+
+	open fun nullableLongList(document: Document, fieldName: String): List<Long>? {
+		return document.getFields(fieldName)?.map { mapToLong(it) }
+	}
+
+	open fun nullableLongList(result: SearchResult, fieldName: String): List<Long>? {
+		return nullableLongList(result.document, fieldName)
+	}
+
+	protected open fun mapToLong(field: IndexableField): Long {
+		return mapToNumber(field).toLong()
+	}
+
 
 	open fun float(document: Document, fieldName: String): Float {
-		return number(document, fieldName).toFloat()
+		return mapField(document, fieldName) { mapToFloat(it) }
 	}
 
 	open fun float(result: SearchResult, fieldName: String): Float {
@@ -98,16 +159,36 @@ open class FieldMapper {
 	}
 
 	open fun nullableFloat(document: Document, fieldName: String): Float? {
-		return nullableNumber(document, fieldName)?.toFloat()
+		return mapNullableField(document, fieldName) { mapToFloat(it) }
 	}
 
 	open fun nullableFloat(result: SearchResult, fieldName: String): Float? {
 		return nullableFloat(result.document, fieldName)
 	}
 
+	open fun floatList(document: Document, fieldName: String): List<Float> {
+		return mapFields(document, fieldName) { mapToFloat(it) }
+	}
+
+	open fun floatList(result: SearchResult, fieldName: String): List<Float> {
+		return floatList(result.document, fieldName)
+	}
+
+	open fun nullableFloatList(document: Document, fieldName: String): List<Float>? {
+		return document.getFields(fieldName)?.map { mapToFloat(it) }
+	}
+
+	open fun nullableFloatList(result: SearchResult, fieldName: String): List<Float>? {
+		return nullableFloatList(result.document, fieldName)
+	}
+
+	protected open fun mapToFloat(field: IndexableField): Float {
+		return mapToNumber(field).toFloat()
+	}
+
 
 	open fun double(document: Document, fieldName: String): Double {
-		return number(document, fieldName).toDouble()
+		return mapField(document, fieldName) { mapToDouble(it) }
 	}
 
 	open fun double(result: SearchResult, fieldName: String): Double {
@@ -123,16 +204,36 @@ open class FieldMapper {
 	}
 
 	open fun nullableDouble(document: Document, fieldName: String): Double? {
-		return nullableNumber(document, fieldName)?.toDouble()
+		return mapNullableField(document, fieldName) { mapToDouble(it) }
 	}
 
 	open fun nullableDouble(result: SearchResult, fieldName: String): Double? {
 		return nullableDouble(result.document, fieldName)
 	}
 
+	open fun doubleList(document: Document, fieldName: String): List<Double> {
+		return mapFields(document, fieldName) { mapToDouble(it) }
+	}
+
+	open fun doubleList(result: SearchResult, fieldName: String): List<Double> {
+		return doubleList(result.document, fieldName)
+	}
+
+	open fun nullableDoubleList(document: Document, fieldName: String): List<Double>? {
+		return document.getFields(fieldName)?.map { mapToDouble(it) }
+	}
+
+	open fun nullableDoubleList(result: SearchResult, fieldName: String): List<Double>? {
+		return nullableDoubleList(result.document, fieldName)
+	}
+
+	protected open fun mapToDouble(field: IndexableField): Double {
+		return mapToNumber(field).toDouble()
+	}
+
 
 	open fun date(document: Document, fieldName: String): Date {
-		return Date(long(document, fieldName))
+		return mapField(document, fieldName) { mapToDate(it) }
 	}
 
 	open fun date(result: SearchResult, fieldName: String): Date {
@@ -148,20 +249,36 @@ open class FieldMapper {
 	}
 
 	open fun nullableDate(document: Document, fieldName: String): Date? {
-		nullableLong(document, fieldName)?.let {
-			return Date(it)
-		}
-
-		return null
+		return mapNullableField(document, fieldName) { mapToDate(it) }
 	}
 
 	open fun nullableDate(result: SearchResult, fieldName: String): Date? {
 		return nullableDate(result.document, fieldName)
 	}
 
+	open fun dateList(document: Document, fieldName: String): List<Date> {
+		return mapFields(document, fieldName) { mapToDate(it) }
+	}
+
+	open fun dateList(result: SearchResult, fieldName: String): List<Date> {
+		return dateList(result.document, fieldName)
+	}
+
+	open fun nullableDateList(document: Document, fieldName: String): List<Date>? {
+		return document.getFields(fieldName)?.map { mapToDate(it) }
+	}
+
+	open fun nullableDateList(result: SearchResult, fieldName: String): List<Date>? {
+		return nullableDateList(result.document, fieldName)
+	}
+
+	protected open fun mapToDate(field: IndexableField): Date {
+		return Date(mapToLong(field))
+	}
+
 
 	open fun number(document: Document, fieldName: String): Number {
-		return document.getField(fieldName).numericValue()
+		return mapField(document, fieldName) { mapToNumber(it) }
 	}
 
 	open fun number(result: SearchResult, fieldName: String): Number {
@@ -177,11 +294,28 @@ open class FieldMapper {
 	}
 
 	open fun nullableNumber(document: Document, fieldName: String): Number? {
-		return document.getField(fieldName)?.numericValue()
+		return mapNullableField(document, fieldName) { mapToNumber(it) }
 	}
 
 	open fun nullableNumber(result: SearchResult, fieldName: String): Number? {
 		return nullableNumber(result.document, fieldName)
+	}
+
+	protected open fun mapToNumber(field: IndexableField): Number {
+		return field.numericValue()
+	}
+
+
+	open fun <T> mapField(document: Document, fieldName: String, mapper: (IndexableField) -> T): T {
+		return mapper(document.getField(fieldName))
+	}
+
+	open fun <T> mapNullableField(document: Document, fieldName: String, mapper: (IndexableField) -> T): T? {
+		return document.getField(fieldName)?.let { mapper(it) }
+	}
+
+	open fun <T> mapFields(document: Document, fieldName: String, mapper: (IndexableField) -> T): List<T> {
+		return document.getFields(fieldName).map { mapper(it) }
 	}
 
 }
