@@ -14,6 +14,10 @@ abstract class QueryBuilderBase {
 		return MatchAllDocsQuery()
 	}
 
+	open fun allDocumentsThatHaveField(fieldName: String): Query {
+		return WildcardQuery(Term(fieldName, "*"))
+	}
+
 
 	open fun createQueriesForSingleTerms(searchTerm: String, singleTermQueryBuilder: (singleTerm: String) -> List<Query>): Query {
 		if (searchTerm.isBlank()) {
