@@ -10,6 +10,11 @@ ext {
     luceneVersion = "8.4.1"
     latestLuceneVersionCompatibleWithAndroid = "4.7.2"
 
+
+    slf4JVersion = "1.7.30"
+
+    /*      Test     */
+
     junitVersion = "5.5.2"
     assertJVersion = "3.12.2"
     mockitoVersion = "2.22.0"
