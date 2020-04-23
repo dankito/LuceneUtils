@@ -31,6 +31,19 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
         return document
     }
 
+    open fun createDocumentForNonNullFields(fields: List<IndexableField?>): Document {
+        val document = Document()
+
+        fields.forEach { field ->
+            if (field != null) {
+                document.add(field)
+            }
+        }
+
+        return document
+    }
+
+
     open fun saveDocument(vararg fields: IndexableField): Document {
         return saveDocument(fields.toList())
     }
@@ -44,6 +57,11 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
         return document
     }
+
+    open fun saveDocumentForNonNullFields(vararg fields: IndexableField?): Document {
+        return saveDocument(*fields.filterNotNull().toTypedArray())
+    }
+
 
     open fun updateDocument(idFieldName: String, idFieldValue: String, vararg fields: IndexableField): Document {
         val fieldsIncludingIdField = mutableListOf(createIdField(idFieldName, idFieldValue))
