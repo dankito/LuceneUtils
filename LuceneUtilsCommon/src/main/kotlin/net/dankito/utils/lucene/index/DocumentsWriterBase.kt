@@ -51,15 +51,27 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
     open fun saveDocument(fields: List<IndexableField>): Document {
         val document = createDocument(fields)
 
-        writer.addDocument(document)
-
-        writer.commit()
+        saveDocument(document)
 
         return document
     }
 
+    open fun saveDocument(document: Document) {
+        writer.addDocument(document)
+
+        writer.commit() // TODO: very expensive call, call only every few seconds
+    }
+
     open fun saveDocumentForNonNullFields(vararg fields: IndexableField?): Document {
         return saveDocument(*fields.filterNotNull().toTypedArray())
+    }
+
+    open fun saveDocuments(documents: List<Document>) {
+        documents.forEach { document ->
+            writer.addDocument(document)
+        }
+
+        writer.commit()
     }
 
 
@@ -73,7 +85,7 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
         writer.updateDocument(findExistingDocumentTerm, document)
 
-        writer.commit()
+        writer.commit() // TODO: very expensive call, call only every few seconds
 
         return document
     }
