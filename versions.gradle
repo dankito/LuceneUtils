@@ -5,7 +5,7 @@ ext {
     sourceCodeRepositoryBaseUrl = "github.com/dankito/LuceneUtils"
     projectDescription = "Library that facilitates the usage of Lucene, e.g. to index fields, create queries, map search results, additional field types like Boolean and Date field, ..."
 
-    kotlinVersion = "1.3.71"
+    kotlinVersion = "1.3.72"
 
     luceneVersion = "8.4.1"
     latestLuceneVersionCompatibleWithAndroid = "4.7.2"
