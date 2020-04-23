@@ -47,6 +47,11 @@ abstract class QueryBuilderBase {
 	}
 
 	@JvmOverloads
+	open fun exact(fieldName: String, searchTerm: String, caseInsensitive: Boolean = true): Query {
+		return TermQuery(Term(fieldName, if (caseInsensitive) searchTerm.toLowerCase() else searchTerm))
+	}
+
+	@JvmOverloads
 	open fun startsWith(fieldName: String, searchTerm: String, caseInsensitive: Boolean = true): Query {
 		return wildcardQuery(fieldName, searchTerm, caseInsensitive, true, false)
 	}
