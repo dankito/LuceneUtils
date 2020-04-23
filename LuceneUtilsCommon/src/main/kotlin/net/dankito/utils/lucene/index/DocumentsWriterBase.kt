@@ -21,6 +21,10 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
     }
 
 
+    open fun createDocument(vararg fields: IndexableField): Document {
+        return createDocument(fields.toList())
+    }
+
     open fun createDocument(fields: List<IndexableField>): Document {
         val document = Document()
 
@@ -31,16 +35,12 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
         return document
     }
 
+    open fun createDocumentForNonNullFields(vararg fields: IndexableField?): Document {
+        return createDocument(fields.filterNotNull())
+    }
+
     open fun createDocumentForNonNullFields(fields: List<IndexableField?>): Document {
-        val document = Document()
-
-        fields.forEach { field ->
-            if (field != null) {
-                document.add(field)
-            }
-        }
-
-        return document
+        return createDocument(fields.filterNotNull())
     }
 
 
