@@ -18,6 +18,17 @@ abstract class QueryBuilderBase {
 		return WildcardQuery(Term(fieldName, "*"))
 	}
 
+	open fun allDocumentsThatDoNotHaveField(fieldName: String): Query {
+		// for an explanation see https://kb.ucla.edu/articles/pure-negation-query-in-lucene:
+		// with an invert index one can only search for documents having a field, but not for documents 'not having field'.
+		// So the trick is to get all documents and subtracting the ones we don't want.
+
+		return createQueryForClauses(listOf(
+			BooleanClause(allDocuments(), BooleanClause.Occur.MUST),
+			BooleanClause(allDocumentsThatHaveField(fieldName), BooleanClause.Occur.MUST_NOT)
+		))
+	}
+
 
 	open fun createQueriesForSingleTerms(searchTerm: String, singleTermQueryBuilder: (singleTerm: String) -> List<Query>): Query {
 		if (searchTerm.isBlank()) {
