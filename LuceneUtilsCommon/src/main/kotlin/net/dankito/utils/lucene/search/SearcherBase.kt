@@ -1,5 +1,6 @@
 package net.dankito.utils.lucene.search
 
+import net.dankito.fints.mapper.LazyLoadingSearchResultsList
 import net.dankito.utils.lucene.mapper.ObjectMapper
 import net.dankito.utils.lucene.mapper.PropertyDescription
 import org.apache.lucene.index.DirectoryReader
@@ -64,6 +65,26 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 			reader.close()
 
 			return mapper.map(documents, objectClass, properties)
+		} catch (e: Exception) {
+			log.error("Could not execute query $query", e)
+
+			return listOf()
+		}
+	}
+
+	@JvmOverloads
+	open fun <T> searchAndMapLazily(query: Query, objectClass: Class<T>, properties: List<PropertyDescription>,
+									countMaxResults: Int = 10_000, countResultToPreload: Int = 10, sortFields: List<SortField> = listOf()): List<T> {
+		try {
+			val reader = DirectoryReader.open(directory)
+			val searcher = IndexSearcher(reader)
+
+			val topDocs = if (sortFields.isEmpty()) searcher.search(query, countMaxResults)
+			else searcher.search(query, countMaxResults, Sort(*sortFields.toTypedArray()))
+
+			val documentIds = topDocs.scoreDocs.map { it.doc }
+
+			return LazyLoadingSearchResultsList(documentIds, searcher, objectClass, properties, countResultToPreload)
 		} catch (e: Exception) {
 			log.error("Could not execute query $query", e)
 
