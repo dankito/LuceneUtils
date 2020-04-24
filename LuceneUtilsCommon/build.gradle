@@ -13,6 +13,7 @@ compileTestKotlin.kotlinOptions.jvmTarget = "1.6"
 
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    api "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
     api "org.slf4j:slf4j-api:$slf4JVersion" // can't believe it, when using implementation SearcherBase cannot find slf4j
 
