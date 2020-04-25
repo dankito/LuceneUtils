@@ -19,6 +19,9 @@ open class LazyLoadingSearchResultsList<T>(
     protected val mapper = ObjectMapper()
 
 
+    protected val fieldsToLoad = properties.map { it.documentFieldName }.toSet()
+
+
     override val size: Int
         get() = documentIds.size
 
@@ -47,7 +50,7 @@ open class LazyLoadingSearchResultsList<T>(
     }
 
     protected open fun mapSearchResult(documentId: Int): T {
-        val document = searcher.doc(documentId)
+        val document = searcher.doc(documentId, fieldsToLoad)
 
         return mapper.toObject(document, objectClass, properties)
     }

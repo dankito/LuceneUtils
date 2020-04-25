@@ -60,7 +60,8 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 			val topDocs = if (sortFields.isEmpty()) searcher.search(query, countMaxResults)
 			else searcher.search(query, countMaxResults, Sort(*sortFields.toTypedArray()))
 
-			val documents = topDocs.scoreDocs.map { searcher.doc(it.doc) }
+			val fieldsToLoad = properties.map { it.documentFieldName }.toSet()
+			val documents = topDocs.scoreDocs.map { searcher.doc(it.doc, fieldsToLoad) }
 
 			reader.close()
 
