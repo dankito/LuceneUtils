@@ -1,7 +1,9 @@
 package net.dankito.utils.lucene.search
 
+import net.dankito.utils.lucene.Constants
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.IndexableField
+import java.math.BigDecimal
 import java.util.*
 
 
@@ -274,6 +276,150 @@ open class FieldMapper {
 
 	protected open fun mapToDate(field: IndexableField): Date {
 		return Date(mapToLong(field))
+	}
+
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimal(document: Document, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): BigDecimal {
+		return mapField(document, fieldName) { mapToBigDecimal(it, precision) }
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimal(result: SearchResult, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): BigDecimal {
+		return bigDecimal(result.document, fieldName, precision)
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimal(document: Document, fieldName: String, defaultValue: BigDecimal, precision: Int = Constants.DefaultBigDecimalPrecision): BigDecimal {
+		return nullableBigDecimal(document, fieldName, precision) ?: defaultValue
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimal(result: SearchResult, fieldName: String, defaultValue: BigDecimal, precision: Int = Constants.DefaultBigDecimalPrecision): BigDecimal {
+		return bigDecimal(result.document, fieldName, defaultValue, precision)
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableBigDecimal(document: Document, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): BigDecimal? {
+		return mapNullableField(document, fieldName) { mapToBigDecimal(it, precision) }
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableDBigDecimal(result: SearchResult, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): BigDecimal? {
+		return nullableBigDecimal(result.document, fieldName, precision)
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimalList(document: Document, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): List<BigDecimal> {
+		return mapFields(document, fieldName) { mapToBigDecimal(it, precision) }
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimalList(result: SearchResult, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): List<BigDecimal> {
+		return bigDecimalList(result.document, fieldName, precision)
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableBigDecimalList(document: Document, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): List<BigDecimal>? {
+		return document.getFields(fieldName)?.map { mapToBigDecimal(it, precision) }
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableBigDecimalList(result: SearchResult, fieldName: String, precision: Int = Constants.DefaultBigDecimalPrecision): List<BigDecimal>? {
+		return nullableBigDecimalList(result.document, fieldName, precision)
+	}
+
+	/**
+	 * BigDecimals are stored as Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal are stored has to be specified.
+	 * precision has to be set to the same value as with which BigDecimal got stored.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	protected open fun mapToBigDecimal(field: IndexableField, precision: Int = Constants.DefaultBigDecimalPrecision): BigDecimal {
+		return BigDecimal.valueOf(mapToLong(field), precision)
 	}
 
 

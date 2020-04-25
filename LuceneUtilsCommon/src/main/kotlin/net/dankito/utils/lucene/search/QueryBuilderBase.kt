@@ -1,8 +1,10 @@
 package net.dankito.utils.lucene.search
 
+import net.dankito.utils.lucene.Constants
 import org.apache.lucene.index.Term
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.*
+import java.math.BigDecimal
 import java.util.*
 
 
@@ -130,6 +132,47 @@ abstract class QueryBuilderBase {
 	protected abstract fun lessOrEqual(fieldName: String, value: Long): Query
 
 	protected abstract fun between(fieldName: String, lowerValueInclusive: Long, upperValueInclusive: Long): Query
+
+
+	/**
+	 * This only works if BigDecimal has been stored as Long.
+	 *
+	 * precision: The precision with which the BigDecimal has been stored as Long.
+	 */
+	open fun matches(fieldName: String, value: BigDecimal, precision: Int = Constants.DefaultBigDecimalPrecision): Query {
+		return matches(fieldName, mapToLong(value, precision))
+	}
+
+	/**
+	 * This only works if BigDecimal has been stored as Long.
+	 *
+	 * precision: The precision with which the BigDecimal has been stored as Long.
+	 */
+	open fun greaterOrEqual(fieldName: String, value: BigDecimal, precision: Int = Constants.DefaultBigDecimalPrecision): Query {
+		return greaterOrEqual(fieldName, mapToLong(value, precision))
+	}
+
+	/**
+	 * This only works if BigDecimal has been stored as Long.
+	 *
+	 * precision: The precision with which the BigDecimal has been stored as Long.
+	 */
+	open fun lessOrEqual(fieldName: String, value: BigDecimal, precision: Int = Constants.DefaultBigDecimalPrecision): Query {
+		return lessOrEqual(fieldName, mapToLong(value, precision))
+	}
+
+	/**
+	 * This only works if BigDecimal has been stored as Long.
+	 *
+	 * precision: The precision with which the BigDecimal has been stored as Long.
+	 */
+	open fun between(fieldName: String, lowerValueInclusive: BigDecimal, upperValueInclusive: BigDecimal, precision: Int = Constants.DefaultBigDecimalPrecision): Query {
+		return between(fieldName, mapToLong(lowerValueInclusive, precision), mapToLong(upperValueInclusive, precision))
+	}
+
+	protected open fun mapToLong(value: BigDecimal, precision: Int): Long {
+		return value.scaleByPowerOfTen(precision).toLong()
+	}
 
 
 	/*		Date queries		*/

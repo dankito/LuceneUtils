@@ -3,7 +3,7 @@ package net.dankito.utils.lucene
 import org.apache.lucene.util.Version
 
 
-class Constants {
+class Lucene4Constants {
 
     companion object {
 

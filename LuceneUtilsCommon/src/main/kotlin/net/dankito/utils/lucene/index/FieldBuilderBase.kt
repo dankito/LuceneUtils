@@ -1,7 +1,9 @@
 package net.dankito.utils.lucene.index
 
+import net.dankito.utils.lucene.Constants.Companion.DefaultBigDecimalPrecision
 import org.apache.lucene.document.*
 import org.apache.lucene.util.BytesRef
+import java.math.BigDecimal
 import java.util.*
 
 
@@ -233,6 +235,58 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 		}
 	}
 
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimalField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision): LongPoint {
+		return longField(name, mapToLong(value, precision))
+	}
+
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableBigDecimalField(name: String, value: BigDecimal?, precision: Int = DefaultBigDecimalPrecision): LongPoint? {
+		return if (value == null) null else bigDecimalField(name, value, precision)
+	}
+
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun bigDecimalField(name: String, values: List<BigDecimal>, precision: Int = DefaultBigDecimalPrecision): List<LongPoint> {
+		return values.map { value ->
+			bigDecimalField(name, value, precision)
+		}
+	}
+
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableBigDecimalField(name: String, values: List<BigDecimal>?, precision: Int = DefaultBigDecimalPrecision): List<LongPoint>? {
+		return values?.map { value ->
+			bigDecimalField(name, value, precision)
+		}
+	}
+
 
 	open fun storedField(name: String, value: String): StoredField {
 		return StoredField(name, value)
@@ -353,6 +407,63 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 		return values?.map { value ->
 			storedField(name, value)
 		}
+	}
+
+
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun storedField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision): StoredField {
+		return storedField(name, mapToLong(value, precision))
+	}
+
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableStoredField(name: String, value: BigDecimal?, precision: Int = DefaultBigDecimalPrecision): StoredField? {
+		return if (value == null) null else storedField(name, value, precision)
+	}
+
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun storedBigDecimalListField(name: String, values: List<BigDecimal>, precision: Int = DefaultBigDecimalPrecision): List<StoredField> {
+		return values.map { value ->
+			storedField(name, value, precision)
+		}
+	}
+
+	/**
+	 * BigDecimals are converted to Long.
+	 *
+	 * Therefore the precision (= number of decimal places) with which your BigDecimal should be stored has to be specified.
+	 *
+	 * The default is 2 which is accurate for most currencies.
+	 */
+	@JvmOverloads
+	open fun nullableStoredBigDecimalListField(name: String, values: List<BigDecimal>?, precision: Int = DefaultBigDecimalPrecision): List<StoredField>? {
+		return values?.map { value ->
+			storedField(name, value, precision)
+		}
+	}
+
+	protected open fun mapToLong(value: BigDecimal, precision: Int): Long {
+		return value.scaleByPowerOfTen(precision).toLong()
 	}
 
 
