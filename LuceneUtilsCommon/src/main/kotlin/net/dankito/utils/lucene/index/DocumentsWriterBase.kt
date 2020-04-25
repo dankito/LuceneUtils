@@ -138,11 +138,16 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
     }
 
     /**
-     * NOTE: if you want to maximize search performance, you can optionally call forceMerge here.
+     * To maximize search performance, you can ask Lucene to merge its segments.
+     *
      * This can be a terribly costly operation, so generally it's only worth it when your index is relatively
-     * static (ie you're done adding documents to it)
+     * static (ie you're done adding documents to it).
+     *
+     * So don't call this too often, e.g. only once per month.
      */
     open fun optimizeIndex() {
+        writer.commit()
+
         writer.forceMerge(1)
     }
 
