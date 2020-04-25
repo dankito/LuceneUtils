@@ -17,6 +17,10 @@ abstract class LuceneTestBase {
 
 	companion object {
 		const val FieldName = "test_field"
+
+		const val StoredFieldName = FieldName + "_stored"
+
+		const val SortFieldName = FieldName + "_sorted"
 	}
 
 
@@ -27,15 +31,20 @@ abstract class LuceneTestBase {
 
 	protected val fields = FieldBuilder()
 
+	protected val writer = DocumentsWriter(indexDirectory)
+
+
 	protected val queries = QueryBuilder()
 
 	protected val mapper = FieldMapper()
 
-	protected val writer = DocumentsWriter(indexDirectory)
+	protected val searcher = Searcher(indexDirectory)
 
 
 	@AfterEach
 	open fun tearDown() {
+		searcher.close()
+
 		writer.close()
 	}
 
@@ -176,11 +185,9 @@ abstract class LuceneTestBase {
 
 
 	protected open fun search(query: Query): List<SearchResult> {
-		Searcher(indexDirectory).use { searcher ->
-			val searchResults = searcher.search(query, 10)
+		val searchResults = searcher.search(query, 10)
 
-			return searchResults.hits
-		}
+		return searchResults.hits
 	}
 
 }

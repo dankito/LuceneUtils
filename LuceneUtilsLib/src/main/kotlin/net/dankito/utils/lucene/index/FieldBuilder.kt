@@ -23,20 +23,8 @@ open class FieldBuilder : FieldBuilderBase<IntPoint, LongPoint, FloatPoint, Doub
 	}
 
 
-	open fun sortField(name: String, value: Int): SortedNumericDocValuesField {
-		return sortField(name, value.toLong())
-	}
-
-	open fun sortField(name: String, value: Long): SortedNumericDocValuesField {
+	override fun sortField(name: String, value: Long): Field {
 		return SortedNumericDocValuesField(name, value)
-	}
-
-	open fun sortField(name: String, value: Float): SortedNumericDocValuesField {
-		return sortField(name, NumericUtils.floatToSortableInt(value))
-	}
-
-	open fun sortField(name: String, value: Double): SortedNumericDocValuesField {
-		return sortField(name, NumericUtils.doubleToSortableLong(value))
 	}
 
 }

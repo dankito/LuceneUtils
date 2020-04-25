@@ -103,4 +103,8 @@ users search with words in the synonym set.
 
 == Sorting
 
-You can only sort on indexed (string) fields that are not tokenized!
+* String: You can only sort on indexed fields that are not tokenized!
+(TODO: Check if this is true: "The sort fields content must be plain text only. If only one single element has a special character or
+accent in one of the fields used for sorting, the whole search will return unsorted results." (https://stackoverflow.com/a/21965849).)
+
+* Numeric values: Convert the number to a Long and add a SortedNumericDocValuesField (or on versions before Lucene 7: NumericDocValuesField) to document.

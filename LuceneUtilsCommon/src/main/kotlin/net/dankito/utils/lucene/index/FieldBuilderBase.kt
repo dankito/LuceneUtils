@@ -3,6 +3,7 @@ package net.dankito.utils.lucene.index
 import net.dankito.utils.lucene.Constants.Companion.DefaultBigDecimalPrecision
 import org.apache.lucene.document.*
 import org.apache.lucene.util.BytesRef
+import org.apache.lucene.util.NumericUtils
 import java.math.BigDecimal
 import java.util.*
 
@@ -474,20 +475,25 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 		return SortedDocValuesField(name, BytesRef(adjustedValue))
 	}
 
-//	open fun sortField(name: String, value: Int): SortedNumericDocValuesField {
-//		return sortField(name, value.toLong())
-//	}
-//
-//	open fun sortField(name: String, value: Long): SortedNumericDocValuesField {
-//		return SortedNumericDocValuesField(name, value)
-//	}
-//
-//	open fun sortField(name: String, value: Float): SortedNumericDocValuesField {
-//		return sortField(name, NumericUtils.floatToSortableInt(value))
-//	}
-//
-//	open fun sortField(name: String, value: Double): SortedNumericDocValuesField {
-//		return sortField(name, NumericUtils.doubleToSortableLong(value))
-//	}
+
+	/*		Sorting		*/
+
+	abstract fun sortField(name: String, value: Long): Field
+
+	open fun sortField(name: String, value: Int): Field {
+		return sortField(name, value.toLong())
+	}
+
+	open fun sortField(name: String, value: Float): Field {
+		return sortField(name, NumericUtils.floatToSortableInt(value))
+	}
+
+	open fun sortField(name: String, value: Double): Field {
+		return sortField(name, NumericUtils.doubleToSortableLong(value))
+	}
+
+	open fun sortField(name: String, value: Date): Field {
+		return sortField(name, value.time)
+	}
 
 }

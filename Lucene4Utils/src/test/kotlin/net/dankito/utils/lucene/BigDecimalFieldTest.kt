@@ -89,14 +89,14 @@ class BigDecimalFieldTest : LuceneTestBase() {
     private fun index(value: BigDecimal, precision: Int) {
         index(listOf(
             fields.bigDecimalField(FieldName, value, precision),
-            fields.storedField(FieldName + "_stored", value, precision)
+            fields.storedField(StoredFieldName, value, precision)
         ))
     }
 
     private fun search(value: BigDecimal, precision: Int): List<BigDecimal> {
         val searchResults = search(queries.matches(FieldName, value, precision))
 
-        return searchResults.map { mapper.bigDecimal(it, FieldName + "_stored", precision) }
+        return searchResults.map { mapper.bigDecimal(it, StoredFieldName, precision) }
     }
 
 }

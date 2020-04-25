@@ -7,7 +7,7 @@ sourceCompatibility = 1.7
 
 compileKotlin.kotlinOptions.jvmTarget = "1.6"
 
-compileTestKotlin.kotlinOptions.jvmTarget = "1.6"
+compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 
 
 ext.artifactName = "lucene-4-utils"
