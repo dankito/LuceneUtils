@@ -20,18 +20,20 @@ open class QueryBuilder : QueryBuilderBase() {
 	}
 
 
-	/*		Date queries		*/
-
-	open fun exactDateQuery(fieldName: String, date: Date): Query {
-		return LongPoint.newExactQuery(fieldName, date.time)
+	override fun matches(fieldName: String, value: Long): Query {
+		return LongPoint.newExactQuery(fieldName,value)
 	}
 
-	open fun afterDateQuery(fieldName: String, dateAfterThisInclusive: Date): Query {
-		return LongPoint.newRangeQuery(fieldName, dateAfterThisInclusive.time, Long.MAX_VALUE)
+	override fun greaterOrEqual(fieldName: String, value: Long): Query {
+		return LongPoint.newRangeQuery(fieldName, value, Long.MAX_VALUE)
 	}
 
-	open fun beforeDateQuery(fieldName: String, dateBeforeThisInclusive: Date): Query {
-		return LongPoint.newRangeQuery(fieldName, Long.MIN_VALUE, dateBeforeThisInclusive.time)
+	override fun lessOrEqual(fieldName: String, value: Long): Query {
+		return LongPoint.newRangeQuery(fieldName, Long.MIN_VALUE, value)
+	}
+
+	override fun between(fieldName: String, lowerValueInclusive: Long, upperValueInclusive: Long): Query {
+		return LongPoint.newRangeQuery(fieldName, lowerValueInclusive, upperValueInclusive)
 	}
 
 }

@@ -15,10 +15,10 @@ open class DateFieldTest : LuceneTestBase() {
 	fun `Exact date`() {
 
 		// given
-		index(fields.dateTimeField(FieldName, Date))
+		index(fields.dateField(FieldName, Date))
 
 		// when
-		val result = search(queries.exactDateQuery(FieldName, Date))
+		val result = search(queries.matches(FieldName, Date))
 
 		// then
 		assertThat(result).hasSize(1)
@@ -28,10 +28,10 @@ open class DateFieldTest : LuceneTestBase() {
 	fun `Date after`() {
 
 		// given
-		index(fields.dateTimeField(FieldName, Date))
+		index(fields.dateField(FieldName, Date))
 
 		// when
-		val result = search(queries.afterDateQuery(FieldName, Date))
+		val result = search(queries.afterDate(FieldName, Date))
 
 		// then
 		assertThat(result).hasSize(1)
@@ -41,26 +41,52 @@ open class DateFieldTest : LuceneTestBase() {
 	fun `Date before`() {
 
 		// given
-		index(fields.dateTimeField(FieldName, Date))
+		index(fields.dateField(FieldName, Date))
 
 		// when
-		val result = search(queries.beforeDateQuery(FieldName, Date))
+		val result = search(queries.beforeDate(FieldName, Date))
 
 		// then
 		assertThat(result).hasSize(1)
 	}
 
 	@Test
-	fun `Date out of range`() {
+	fun `Date after out of range`() {
 
 		// given
-		index(fields.dateTimeField(FieldName, Date))
+		index(fields.dateField(FieldName, Date))
 
 		// when
-		val result = search(queries.afterDateQuery(FieldName, java.util.Date(Date.time + 1)))
+		val result = search(queries.afterDate(FieldName, java.util.Date(Date.time + 1)))
 
 		// then
 		assertThat(result).isEmpty()
+	}
+
+	@Test
+	fun `Date before out of range`() {
+
+		// given
+		index(fields.dateField(FieldName, Date))
+
+		// when
+		val result = search(queries.beforeDate(FieldName, java.util.Date(Date.time - 1)))
+
+		// then
+		assertThat(result).isEmpty()
+	}
+
+	@Test
+	fun `Date between`() {
+
+		// given
+		index(fields.dateField(FieldName, Date))
+
+		// when
+		val result = search(queries.between(FieldName, java.util.Date(Date.time - 1), java.util.Date(Date.time + 1)))
+
+		// then
+		assertThat(result).hasSize(1)
 	}
 
 }

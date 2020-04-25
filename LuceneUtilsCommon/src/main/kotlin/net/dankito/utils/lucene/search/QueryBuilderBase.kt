@@ -3,6 +3,7 @@ package net.dankito.utils.lucene.search
 import org.apache.lucene.index.Term
 import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.*
+import java.util.*
 
 
 abstract class QueryBuilderBase {
@@ -117,6 +118,36 @@ abstract class QueryBuilderBase {
 		else {
 			adjustedSearchTerm
 		}
+	}
+
+
+	/*		Numeric Queries		*/
+
+	protected abstract fun matches(fieldName: String, value: Long): Query
+
+	protected abstract fun greaterOrEqual(fieldName: String, value: Long): Query
+
+	protected abstract fun lessOrEqual(fieldName: String, value: Long): Query
+
+	protected abstract fun between(fieldName: String, lowerValueInclusive: Long, upperValueInclusive: Long): Query
+
+
+	/*		Date queries		*/
+
+	open fun matches(fieldName: String, date: Date): Query {
+		return matches(fieldName, date.time)
+	}
+
+	open fun afterDate(fieldName: String, dateAfterThisInclusive: Date): Query {
+		return greaterOrEqual(fieldName, dateAfterThisInclusive.time)
+	}
+
+	open fun beforeDate(fieldName: String, dateBeforeThisInclusive: Date): Query {
+		return lessOrEqual(fieldName, dateBeforeThisInclusive.time)
+	}
+
+	open fun between(fieldName: String, dateAfterThisInclusive: Date, dateBeforeThisInclusive: Date): Query {
+		return between(fieldName, dateAfterThisInclusive.time, dateBeforeThisInclusive.time)
 	}
 
 }

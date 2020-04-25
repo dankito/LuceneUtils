@@ -2,6 +2,8 @@ package net.dankito.utils.lucene.search
 
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
+import org.apache.lucene.search.NumericRangeQuery
+import org.apache.lucene.search.Query
 
 
 open class QueryBuilder : QueryBuilderBase() {
@@ -17,20 +19,20 @@ open class QueryBuilder : QueryBuilderBase() {
 	}
 
 
-	// TODO:
+	override fun matches(fieldName: String, value: Long): Query {
+		return NumericRangeQuery.newLongRange(fieldName, value, value, true, true)
+	}
 
-	/*		Date queries		*/
+	override fun greaterOrEqual(fieldName: String, value: Long): Query {
+		return NumericRangeQuery.newLongRange(fieldName, value, Long.MAX_VALUE, true, true)
+	}
 
-//	open fun exactDateQuery(fieldName: String, date: Date): Query {
-//		return LongPoint.newExactQuery(fieldName, date.time)
-//	}
-//
-//	open fun afterDateQuery(fieldName: String, dateAfterThisInclusive: Date): Query {
-//		return LongPoint.newRangeQuery(fieldName, dateAfterThisInclusive.time, Long.MAX_VALUE)
-//	}
-//
-//	open fun beforeDateQuery(fieldName: String, dateBeforeThisInclusive: Date): Query {
-//		return LongPoint.newRangeQuery(fieldName, Long.MIN_VALUE, dateBeforeThisInclusive.time)
-//	}
+	override fun lessOrEqual(fieldName: String, value: Long): Query {
+		return NumericRangeQuery.newLongRange(fieldName, Long.MIN_VALUE, value, true, true)
+	}
+
+	override fun between(fieldName: String, lowerValueInclusive: Long, upperValueInclusive: Long): Query {
+		return NumericRangeQuery.newLongRange(fieldName, lowerValueInclusive, upperValueInclusive, true, true)
+	}
 
 }
