@@ -58,20 +58,23 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
     open fun saveDocument(document: Document) {
         writer.addDocument(document)
-
-        writer.commit() // TODO: very expensive call, call only every few seconds
     }
 
     open fun saveDocumentForNonNullFields(vararg fields: IndexableField?): Document {
         return saveDocument(*fields.filterNotNull().toTypedArray())
     }
 
+
     open fun saveDocuments(documents: List<Document>) {
         documents.forEach { document ->
             writer.addDocument(document)
         }
+    }
 
-        writer.commit()
+    open fun saveDocumentsAndFlushChangesToDisk(documents: List<Document>) {
+        saveDocuments(documents)
+
+        flushChangesToDisk()
     }
 
 
@@ -84,8 +87,6 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
         val findExistingDocumentTerm = Term(idFieldName, idFieldValue)
 
         writer.updateDocument(findExistingDocumentTerm, document)
-
-        writer.commit() // TODO: very expensive call, call only every few seconds
 
         return document
     }
@@ -114,7 +115,25 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
     open fun deleteDocument(idFieldName: String, idFieldValue: String) {
         writer.deleteDocuments(Term(idFieldName, idFieldValue))
+    }
 
+    open fun deleteDocumentAndFlushChangesToDisk(idFieldName: String, idFieldValue: String) {
+        deleteDocument(idFieldName, idFieldValue)
+
+        flushChangesToDisk()
+    }
+
+
+    /**
+     * A reader / searcher will not see the changes until they are flushed to disk.
+     *
+     * By default changes in first instance are cached in memory. Lucene has a default mechanism implemented that
+     * after a certain amount document changes or memory used it automatically writes the changes to disk. If you don't
+     * want to wait till this occurs but want to see changes immediately, you have to commit them / write them to disk.
+     *
+     * Be aware this is a costly operation which impacts performance. So don't call this too often.
+     */
+    open fun flushChangesToDisk() {
         writer.commit()
     }
 
