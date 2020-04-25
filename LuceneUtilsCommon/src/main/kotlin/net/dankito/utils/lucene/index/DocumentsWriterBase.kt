@@ -61,7 +61,11 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
     }
 
     open fun saveDocumentForNonNullFields(vararg fields: IndexableField?): Document {
-        return saveDocument(*fields.filterNotNull().toTypedArray())
+        return saveDocument(fields.filterNotNull())
+    }
+
+    open fun saveDocumentForNonNullFields(fields: List<IndexableField?>): Document {
+        return saveDocument(fields.filterNotNull())
     }
 
 
@@ -79,8 +83,12 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
 
     open fun updateDocument(idFieldName: String, idFieldValue: String, vararg fields: IndexableField): Document {
+        return updateDocument(idFieldName, idFieldValue, fields.toList())
+    }
+
+    open fun updateDocument(idFieldName: String, idFieldValue: String, fields: List<IndexableField>): Document {
         val fieldsIncludingIdField = mutableListOf(createIdField(idFieldName, idFieldValue))
-        fieldsIncludingIdField.addAll(fields.toList())
+        fieldsIncludingIdField.addAll(fields)
 
         val document = createDocument(fieldsIncludingIdField)
 
