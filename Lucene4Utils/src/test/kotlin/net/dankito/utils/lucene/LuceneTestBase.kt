@@ -170,6 +170,8 @@ abstract class LuceneTestBase {
 
 	protected open fun index(fields: List<IndexableField>) {
 		writer.saveDocument(fields)
+
+		writer.flushChangesToDisk()
 	}
 
 
