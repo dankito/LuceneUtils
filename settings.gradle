@@ -1,4 +1,4 @@
 include "LuceneUtilsCommon"
 
-include "LuceneUtilsLib"
+include "LuceneUtils"
 include "Lucene4Utils"
