@@ -1,6 +1,5 @@
 package net.dankito.utils.lucene.search
 
-import net.dankito.fints.mapper.LazyLoadingSearchResultsList
 import net.dankito.utils.lucene.mapper.ObjectMapper
 import net.dankito.utils.lucene.mapper.PropertyDescription
 import org.apache.lucene.index.DirectoryReader

@@ -1,4 +1,4 @@
-package net.dankito.fints.mapper
+package net.dankito.utils.lucene.search
 
 import net.dankito.utils.lucene.mapper.ObjectMapper
 import net.dankito.utils.lucene.mapper.PropertyDescription
