@@ -1,7 +1,7 @@
 package net.dankito.utils.lucene
 
 import net.dankito.utils.datetime.asUtilDate
-import org.apache.lucene.search.SortField
+import net.dankito.utils.lucene.sort.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -34,7 +34,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.STRING)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(StringSortField(SortFieldName)))
 
 
         // then
@@ -74,7 +74,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.STRING, true)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(StringSortField(SortFieldName, true)))
 
 
         // then
@@ -114,7 +114,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.INT)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(IntSortField(SortFieldName)))
 
 
         // then
@@ -154,7 +154,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.LONG)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(LongSortField(SortFieldName)))
 
 
         // then
@@ -194,7 +194,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.FLOAT)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(FloatSortField(SortFieldName)))
 
 
         // then
@@ -234,7 +234,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.DOUBLE)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(DoubleSortField(SortFieldName)))
 
 
         // then
@@ -274,7 +274,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.LONG)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(DateSortField(SortFieldName)))
 
 
         // then
@@ -314,7 +314,7 @@ class SortFieldTest : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(SortField(SortFieldName, SortField.Type.LONG, true)))
+        val result = searcher.search(queries.allDocuments(), sortFields = listOf(DateSortField(SortFieldName, true)))
 
 
         // then
