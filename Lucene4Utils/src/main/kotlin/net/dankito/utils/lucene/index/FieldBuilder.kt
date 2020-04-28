@@ -3,7 +3,7 @@ package net.dankito.utils.lucene.index
 import org.apache.lucene.document.*
 
 
-open class FieldBuilder : FieldBuilderBase<IntField, LongField, FloatField, DoubleField>() {
+open class FieldBuilder : FieldBuilderBase() {
 
 	override fun createIntField(name: String, value: Int): IntField {
 		return IntField(name, value, Field.Store.NO)

@@ -4,7 +4,7 @@ import org.apache.lucene.document.*
 import org.apache.lucene.util.NumericUtils
 
 
-open class FieldBuilder : FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint>() {
+open class FieldBuilder : FieldBuilderBase() {
 
 	override fun createIntField(name: String, value: Int): IntPoint {
 		return IntPoint(name, value)

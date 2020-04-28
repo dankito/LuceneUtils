@@ -8,15 +8,15 @@ import java.math.BigDecimal
 import java.util.*
 
 
-abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
+abstract class FieldBuilderBase {
 
-	protected abstract fun createIntField(name: String, value: Int): IntPoint
+	protected abstract fun createIntField(name: String, value: Int): Field
 
-	protected abstract fun createLongField(name: String, value: Long): LongPoint
+	protected abstract fun createLongField(name: String, value: Long): Field
 
-	protected abstract fun createFloatField(name: String, value: Float): FloatPoint
+	protected abstract fun createFloatField(name: String, value: Float): Field
 
-	protected abstract fun createDoubleField(name: String, value: Double): DoublePoint
+	protected abstract fun createDoubleField(name: String, value: Double): Field
 
 
 	@JvmOverloads
@@ -132,105 +132,105 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 	}
 
 
-	open fun intField(name: String, value: Int): IntPoint {
+	open fun intField(name: String, value: Int): Field {
 		return createIntField(name, value)
 	}
 
-	open fun nullableIntField(name: String, value: Int?): IntPoint? {
+	open fun nullableIntField(name: String, value: Int?): Field? {
 		return if (value == null) null else intField(name, value)
 	}
 
-	open fun intField(name: String, values: List<Int>): List<IntPoint> {
+	open fun intField(name: String, values: List<Int>): List<Field> {
 		return values.map { value ->
 			intField(name, value)
 		}
 	}
 
-	open fun nullableIntField(name: String, values: List<Int>?): List<IntPoint>? {
+	open fun nullableIntField(name: String, values: List<Int>?): List<Field>? {
 		return values?.map { value ->
 			intField(name, value)
 		}
 	}
 
 
-	open fun longField(name: String, value: Long): LongPoint {
+	open fun longField(name: String, value: Long): Field {
 		return createLongField(name, value)
 	}
 
-	open fun nullableLongField(name: String, value: Long?): LongPoint? {
+	open fun nullableLongField(name: String, value: Long?): Field? {
 		return if (value == null) null else longField(name, value)
 	}
 
-	open fun longField(name: String, values: List<Long>): List<LongPoint> {
+	open fun longField(name: String, values: List<Long>): List<Field> {
 		return values.map { value ->
 			longField(name, value)
 		}
 	}
 
-	open fun nullableLongField(name: String, values: List<Long>?): List<LongPoint>? {
+	open fun nullableLongField(name: String, values: List<Long>?): List<Field>? {
 		return values?.map { value ->
 			longField(name, value)
 		}
 	}
 
 
-	open fun floatField(name: String, value: Float): FloatPoint {
+	open fun floatField(name: String, value: Float): Field {
 		return createFloatField(name, value)
 	}
 
-	open fun nullableFloatField(name: String, value: Float?): FloatPoint? {
+	open fun nullableFloatField(name: String, value: Float?): Field? {
 		return if (value == null) null else floatField(name, value)
 	}
 
-	open fun floatField(name: String, values: List<Float>): List<FloatPoint> {
+	open fun floatField(name: String, values: List<Float>): List<Field> {
 		return values.map { value ->
 			floatField(name, value)
 		}
 	}
 
-	open fun nullableFloatField(name: String, values: List<Float>?): List<FloatPoint>? {
+	open fun nullableFloatField(name: String, values: List<Float>?): List<Field>? {
 		return values?.map { value ->
 			floatField(name, value)
 		}
 	}
 
 
-	open fun doubleField(name: String, value: Double): DoublePoint {
+	open fun doubleField(name: String, value: Double): Field {
 		return createDoubleField(name, value)
 	}
 
-	open fun nullableDoubleField(name: String, value: Double?): DoublePoint? {
+	open fun nullableDoubleField(name: String, value: Double?): Field? {
 		return if (value == null) null else doubleField(name, value)
 	}
 
-	open fun doubleField(name: String, values: List<Double>): List<DoublePoint> {
+	open fun doubleField(name: String, values: List<Double>): List<Field> {
 		return values.map { value ->
 			doubleField(name, value)
 		}
 	}
 
-	open fun nullableDoubleField(name: String, values: List<Double>?): List<DoublePoint>? {
+	open fun nullableDoubleField(name: String, values: List<Double>?): List<Field>? {
 		return values?.map { value ->
 			doubleField(name, value)
 		}
 	}
 
 
-	open fun dateField(name: String, value: Date): LongPoint {
+	open fun dateField(name: String, value: Date): Field {
 		return longField(name, value.time)
 	}
 
-	open fun nullableDateField(name: String, value: Date?): LongPoint? {
+	open fun nullableDateField(name: String, value: Date?): Field? {
 		return if (value == null) null else dateField(name, value)
 	}
 
-	open fun dateField(name: String, values: List<Date>): List<LongPoint> {
+	open fun dateField(name: String, values: List<Date>): List<Field> {
 		return values.map { value ->
 			dateField(name, value)
 		}
 	}
 
-	open fun nullableDateField(name: String, values: List<Date>?): List<LongPoint>? {
+	open fun nullableDateField(name: String, values: List<Date>?): List<Field>? {
 		return values?.map { value ->
 			dateField(name, value)
 		}
@@ -244,7 +244,7 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 	 * The default is 2 which is accurate for most currencies.
 	 */
 	@JvmOverloads
-	open fun bigDecimalField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision): LongPoint {
+	open fun bigDecimalField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision): Field {
 		return longField(name, mapToLong(value, precision))
 	}
 
@@ -256,7 +256,7 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 	 * The default is 2 which is accurate for most currencies.
 	 */
 	@JvmOverloads
-	open fun nullableBigDecimalField(name: String, value: BigDecimal?, precision: Int = DefaultBigDecimalPrecision): LongPoint? {
+	open fun nullableBigDecimalField(name: String, value: BigDecimal?, precision: Int = DefaultBigDecimalPrecision): Field? {
 		return if (value == null) null else bigDecimalField(name, value, precision)
 	}
 
@@ -268,7 +268,7 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 	 * The default is 2 which is accurate for most currencies.
 	 */
 	@JvmOverloads
-	open fun bigDecimalField(name: String, values: List<BigDecimal>, precision: Int = DefaultBigDecimalPrecision): List<LongPoint> {
+	open fun bigDecimalField(name: String, values: List<BigDecimal>, precision: Int = DefaultBigDecimalPrecision): List<Field> {
 		return values.map { value ->
 			bigDecimalField(name, value, precision)
 		}
@@ -282,7 +282,7 @@ abstract class FieldBuilderBase<IntPoint, LongPoint, FloatPoint, DoublePoint> {
 	 * The default is 2 which is accurate for most currencies.
 	 */
 	@JvmOverloads
-	open fun nullableBigDecimalField(name: String, values: List<BigDecimal>?, precision: Int = DefaultBigDecimalPrecision): List<LongPoint>? {
+	open fun nullableBigDecimalField(name: String, values: List<BigDecimal>?, precision: Int = DefaultBigDecimalPrecision): List<Field>? {
 		return values?.map { value ->
 			bigDecimalField(name, value, precision)
 		}
