@@ -1,7 +1,7 @@
 package net.dankito.utils.lucene
 
 
-class TextFieldTest : TextFieldTestBase() {
+class ListFieldTest : ListFieldTestBase() {
 
     override fun createInstancesCreator(): ILuceneTestInstancesCreator<*, *, *, *> {
         return LuceneTestInstancesCreator()

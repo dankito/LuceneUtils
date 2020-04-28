@@ -1,12 +1,8 @@
 package net.dankito.utils.lucene
 
 import net.dankito.utils.io.FileUtils
-import net.dankito.utils.lucene.index.DocumentsWriter
-import net.dankito.utils.lucene.index.FieldBuilder
 import net.dankito.utils.lucene.search.FieldMapper
-import net.dankito.utils.lucene.search.QueryBuilder
 import net.dankito.utils.lucene.search.SearchResult
-import net.dankito.utils.lucene.search.Searcher
 import org.apache.lucene.index.IndexableField
 import org.apache.lucene.search.Query
 import org.junit.jupiter.api.AfterEach
@@ -24,21 +20,26 @@ abstract class LuceneTestBase {
 	}
 
 
+	protected abstract fun createInstancesCreator(): ILuceneTestInstancesCreator<*, *, *, *>
+
+
 	protected val fileUtils = FileUtils()
 
 	protected val indexDirectory = fileUtils.createDirectoryInTempDir("LuceneUtilsTest")
 
-
-	protected val fields = FieldBuilder()
-
-	protected val writer = DocumentsWriter(indexDirectory)
+	protected val instancesCreator = createInstancesCreator()
 
 
-	protected val queries = QueryBuilder()
+	protected val fields = instancesCreator.createFieldBuilder()
+
+	protected val writer = instancesCreator.createDocumentsWriter(indexDirectory)
+
+
+	protected val queries = instancesCreator.createQueryBuilder()
 
 	protected val mapper = FieldMapper()
 
-	protected val searcher = Searcher(indexDirectory)
+	protected val searcher = instancesCreator.createSearcher(indexDirectory)
 
 
 	@AfterEach
@@ -46,6 +47,8 @@ abstract class LuceneTestBase {
 		searcher.close()
 
 		writer.close()
+
+		fileUtils.deleteFolderRecursively(indexDirectory)
 	}
 
 
