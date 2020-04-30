@@ -6,6 +6,7 @@ import org.apache.lucene.document.StringField
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexableField
 import org.apache.lucene.index.Term
+import org.apache.lucene.search.Query
 
 
 open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseable {
@@ -127,6 +128,28 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
     open fun deleteDocumentAndFlushChangesToDisk(idFieldName: String, idFieldValue: String) {
         deleteDocument(idFieldName, idFieldValue)
+
+        flushChangesToDisk()
+    }
+
+    open fun deleteDocuments(idFieldName: String, vararg idFieldValues: String) {
+        val terms = idFieldValues.map { Term(idFieldName, it) }
+
+        writer.deleteDocuments(*terms.toTypedArray())
+    }
+
+    open fun deleteDocumentsAndFlushChangesToDisk(idFieldName: String, vararg idFieldValues: String) {
+        deleteDocuments(idFieldName, *idFieldValues)
+
+        flushChangesToDisk()
+    }
+
+    open fun deleteDocuments(query: Query) {
+        writer.deleteDocuments(query)
+    }
+
+    open fun deleteDocumentsAndFlushChangesToDisk(query: Query) {
+        deleteDocuments(query)
 
         flushChangesToDisk()
     }
