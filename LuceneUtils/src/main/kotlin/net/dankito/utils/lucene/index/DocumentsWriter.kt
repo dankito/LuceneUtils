@@ -11,11 +11,26 @@ import java.nio.file.Path
 
 open class DocumentsWriter(writer: IndexWriter) : DocumentsWriterBase(writer) {
 
-    @JvmOverloads
-    constructor(directory: File, analyzer: Analyzer = StandardAnalyzer()) : this(directory.toPath(), analyzer)
+    companion object {
+
+        @JvmStatic
+        fun createDefaultConfig(analyzer: Analyzer): IndexWriterConfig {
+            val config = IndexWriterConfig(analyzer)
+
+            config.openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND
+
+            return config
+        }
+
+    }
+
 
     @JvmOverloads
-    constructor(directory: Path, analyzer: Analyzer = StandardAnalyzer()) :
-            this(IndexWriter(FSDirectory.open(directory), IndexWriterConfig(analyzer).apply { openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND }))
+    constructor(directory: File, analyzer: Analyzer = StandardAnalyzer(), config: IndexWriterConfig = createDefaultConfig(analyzer)) :
+            this(directory.toPath(), analyzer, config)
+
+    @JvmOverloads
+    constructor(directory: Path, analyzer: Analyzer = StandardAnalyzer(), config: IndexWriterConfig = createDefaultConfig(analyzer)) :
+            this(IndexWriter(FSDirectory.open(directory), config))
 
 }

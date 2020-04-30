@@ -11,7 +11,21 @@ import java.io.File
 
 open class DocumentsWriter(writer: IndexWriter) : DocumentsWriterBase(writer) {
 
-    constructor(directory: File, analyzer: Analyzer = StandardAnalyzer(Lucene4Constants.LuceneVersion)) :
-            this(IndexWriter(FSDirectory.open(directory), IndexWriterConfig(Lucene4Constants.LuceneVersion, analyzer).apply { openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND }))
+    companion object {
+
+        @JvmStatic
+        fun createDefaultConfig(analyzer: Analyzer): IndexWriterConfig {
+            val config = IndexWriterConfig(Lucene4Constants.LuceneVersion, analyzer)
+
+            config.openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND
+
+            return config
+        }
+
+    }
+
+    @JvmOverloads
+    constructor(directory: File, analyzer: Analyzer = StandardAnalyzer(Lucene4Constants.LuceneVersion), config: IndexWriterConfig = createDefaultConfig(analyzer)) :
+            this(IndexWriter(FSDirectory.open(directory), config))
 
 }
