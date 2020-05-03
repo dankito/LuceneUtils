@@ -1,8 +1,11 @@
 package net.dankito.utils.lucene
 
 import net.dankito.utils.io.FileUtils
+import net.dankito.utils.lucene.mapper.PropertyDescription
+import net.dankito.utils.lucene.mapper.PropertyType
 import net.dankito.utils.lucene.search.FieldMapper
 import net.dankito.utils.lucene.search.SearchResult
+import net.dankito.utils.lucene.utils.StringTestObject
 import org.apache.lucene.index.IndexableField
 import org.apache.lucene.search.Query
 import org.junit.jupiter.api.AfterEach
@@ -17,6 +20,9 @@ abstract class LuceneTestBase {
 		const val StoredFieldName = FieldName + "_stored"
 
 		const val SortFieldName = FieldName + "_sorted"
+
+
+		val StringTestObjectProperties = listOf(PropertyDescription(PropertyType.String, FieldName, StringTestObject::name))
 	}
 
 

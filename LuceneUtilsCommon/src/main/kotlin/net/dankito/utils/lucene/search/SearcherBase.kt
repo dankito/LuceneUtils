@@ -33,22 +33,11 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 	@JvmOverloads
 	open fun search(query: Query, countMaxResults: Int = DefaultCountMaxResults,
 					sortFields: List<SortField> = listOf()): SearchResults {
-		try {
-			val reader = DirectoryReader.open(directory)
-			val searcher = IndexSearcher(reader)
 
-			val topDocs = if (sortFields.isEmpty()) searcher.search(query, countMaxResults)
-			else searcher.search(query, countMaxResults, Sort(*sortFields.toTypedArray()))
-
+		return search(query, countMaxResults, sortFields, { error -> SearchResults(error) }) { searcher, topDocs ->
 			val hits = topDocs.scoreDocs.map { SearchResult(it.score, searcher.doc(it.doc)) }
 
-			reader.close()
-
-			return SearchResults(getCountTotalHits(topDocs), hits)
-		} catch (e: Exception) {
-			log.error("Could not execute query $query", e)
-
-			return SearchResults(e)
+			SearchResults(getCountTotalHits(topDocs), hits)
 		}
 	}
 
@@ -56,23 +45,12 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 	@JvmOverloads
 	open fun <T> searchAndMap(query: Query, objectClass: Class<T>, properties: List<PropertyDescription>,
 							  countMaxResults: Int = DefaultCountMaxResults, sortFields: List<SortField> = listOf()): List<T> {
-		try {
-			val reader = DirectoryReader.open(directory)
-			val searcher = IndexSearcher(reader)
 
-			val topDocs = if (sortFields.isEmpty()) searcher.search(query, countMaxResults)
-			else searcher.search(query, countMaxResults, Sort(*sortFields.toTypedArray()))
-
+		return search(query, countMaxResults, sortFields, { listOf() }) { searcher, topDocs ->
 			val fieldsToLoad = properties.map { it.documentFieldName }.toSet()
 			val documents = topDocs.scoreDocs.map { searcher.doc(it.doc, fieldsToLoad) }
 
-			reader.close()
-
-			return mapper.map(documents, objectClass, properties)
-		} catch (e: Exception) {
-			log.error("Could not execute query $query", e)
-
-			return listOf()
+			mapper.map(documents, objectClass, properties)
 		}
 	}
 
@@ -80,6 +58,23 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 	open fun <T> searchAndMapLazily(query: Query, objectClass: Class<T>, properties: List<PropertyDescription>,
 									countMaxResults: Int = DefaultCountMaxResults, countResultToPreload: Int = DefaultCountResultsToPreload,
 									sortFields: List<SortField> = listOf()): List<T> {
+
+		return search(query, countMaxResults, sortFields, false, { listOf() }) { searcher, topDocs ->
+			val documentIds = topDocs.scoreDocs.map { it.doc }
+
+			LazyLoadingSearchResultsList(documentIds, searcher, objectClass, properties, countResultToPreload)
+		}
+	}
+
+
+	protected open fun <T> search(query: Query, countMaxResults: Int, sortFields: List<SortField>,
+								  errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
+
+		return search(query, countMaxResults, sortFields, true, errorOccurred, mapper)
+	}
+
+	protected open fun <T> search(query: Query, countMaxResults: Int, sortFields: List<SortField>, closeReader: Boolean = true,
+								  errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
 		try {
 			val reader = DirectoryReader.open(directory)
 			val searcher = IndexSearcher(reader)
@@ -87,13 +82,17 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 			val topDocs = if (sortFields.isEmpty()) searcher.search(query, countMaxResults)
 			else searcher.search(query, countMaxResults, Sort(*sortFields.toTypedArray()))
 
-			val documentIds = topDocs.scoreDocs.map { it.doc }
+			val result = mapper(searcher, topDocs)
 
-			return LazyLoadingSearchResultsList(documentIds, searcher, objectClass, properties, countResultToPreload)
+			if (closeReader) {
+				reader.close()
+			}
+
+			return result
 		} catch (e: Exception) {
 			log.error("Could not execute query $query", e)
 
-			return listOf()
+			return errorOccurred(e)
 		}
 	}
 
