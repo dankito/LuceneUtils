@@ -1,9 +1,11 @@
 package net.dankito.utils.lucene.search
 
 import net.dankito.utils.lucene.mapper.ObjectMapper
-import net.dankito.utils.lucene.mapper.PropertyDescription
 import org.apache.lucene.index.DirectoryReader
-import org.apache.lucene.search.*
+import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.Query
+import org.apache.lucene.search.Sort
+import org.apache.lucene.search.TopDocs
 import org.apache.lucene.store.Directory
 import org.slf4j.LoggerFactory
 
@@ -30,11 +32,13 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 	}
 
 
-	@JvmOverloads
-	open fun search(query: Query, countMaxResults: Int = DefaultCountMaxResults,
-					sortFields: List<SortField> = listOf()): SearchResults {
+	open fun search(query: Query): SearchResults {
+		return search(SearchConfig(query))
+	}
 
-		return search(query, countMaxResults, sortFields, { error -> SearchResults(error) }) { searcher, topDocs ->
+	open fun search(config: SearchConfig): SearchResults {
+
+		return search(config, { error -> SearchResults(error) }) { searcher, topDocs ->
 			val hits = topDocs.scoreDocs.map { SearchResult(it.score, searcher.doc(it.doc)) }
 
 			SearchResults(getCountTotalHits(topDocs), hits)
@@ -42,45 +46,40 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 	}
 
 
-	@JvmOverloads
-	open fun <T> searchAndMap(query: Query, objectClass: Class<T>, properties: List<PropertyDescription>,
-							  countMaxResults: Int = DefaultCountMaxResults, sortFields: List<SortField> = listOf()): List<T> {
+	open fun <T> searchAndMap(config: MappedSearchConfig<T>): List<T> {
 
-		return search(query, countMaxResults, sortFields, { listOf() }) { searcher, topDocs ->
-			val fieldsToLoad = properties.map { it.documentFieldName }.toSet()
+		return search(config, { listOf() }) { searcher, topDocs ->
+			val fieldsToLoad = config.properties.map { it.documentFieldName }.toSet()
 			val documents = topDocs.scoreDocs.map { searcher.doc(it.doc, fieldsToLoad) }
 
-			mapper.map(documents, objectClass, properties)
+			mapper.map(documents, config.objectClass, config.properties)
 		}
 	}
 
-	@JvmOverloads
-	open fun <T> searchAndMapLazily(query: Query, objectClass: Class<T>, properties: List<PropertyDescription>,
-									countMaxResults: Int = DefaultCountMaxResults, countResultToPreload: Int = DefaultCountResultsToPreload,
-									sortFields: List<SortField> = listOf()): List<T> {
+	open fun <T> searchAndMapLazily(config: MappedSearchConfig<T>): List<T> {
 
-		return search(query, countMaxResults, sortFields, false, { listOf() }) { searcher, topDocs ->
+		return search(config, false, { listOf() }) { searcher, topDocs ->
 			val documentIds = topDocs.scoreDocs.map { it.doc }
 
-			LazyLoadingSearchResultsList(documentIds, searcher, objectClass, properties, countResultToPreload)
+			LazyLoadingSearchResultsList(documentIds, searcher, config.objectClass, config.properties, config.countResultToPreload)
 		}
 	}
 
 
-	protected open fun <T> search(query: Query, countMaxResults: Int, sortFields: List<SortField>,
+	protected open fun <T> search(config: SearchConfig,
 								  errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
 
-		return search(query, countMaxResults, sortFields, true, errorOccurred, mapper)
+		return search(config, true, errorOccurred, mapper)
 	}
 
-	protected open fun <T> search(query: Query, countMaxResults: Int, sortFields: List<SortField>, closeReader: Boolean = true,
+	protected open fun <T> search(config: SearchConfig, closeReader: Boolean = true,
 								  errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
 		try {
 			val reader = DirectoryReader.open(directory)
 			val searcher = IndexSearcher(reader)
 
-			val topDocs = if (sortFields.isEmpty()) searcher.search(query, countMaxResults)
-			else searcher.search(query, countMaxResults, Sort(*sortFields.toTypedArray()))
+			val topDocs = if (config.hasNoSortFields) searcher.search(config.query, config.countMaxResults)
+			else searcher.search(config.query, config.countMaxResults, Sort(*config.sortFields.toTypedArray()))
 
 			val result = mapper(searcher, topDocs)
 
@@ -90,7 +89,7 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 
 			return result
 		} catch (e: Exception) {
-			log.error("Could not execute query $query", e)
+			log.error("Could not execute query ${config.query}", e)
 
 			return errorOccurred(e)
 		}

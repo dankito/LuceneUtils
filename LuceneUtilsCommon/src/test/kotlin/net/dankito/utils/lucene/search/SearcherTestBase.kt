@@ -41,7 +41,7 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), 2)
+        val result = searcher.search(SearchConfig(queries.allDocuments(), 2))
 
 
         // then
@@ -62,7 +62,7 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), sortFields = listOf(StringSortField(FieldName, true)))
+        val result = searcher.search(SearchConfig(queries.allDocuments(), sortFields = listOf(StringSortField(FieldName, true))))
 
 
         // then
@@ -83,7 +83,7 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.search(queries.allDocuments(), 2, listOf(StringSortField(FieldName, true)))
+        val result = searcher.search(SearchConfig(queries.allDocuments(), 2, listOf(StringSortField(FieldName, true))))
 
 
         // then
@@ -105,7 +105,7 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMap(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties)
+        val result = searcher.searchAndMap(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties))
 
 
         // then
@@ -125,7 +125,7 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMap(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties, 2)
+        val result = searcher.searchAndMap(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties, 2))
 
 
         // then
@@ -145,8 +145,8 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMap(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
-                sortFields = listOf(StringSortField(FieldName, true)))
+        val result = searcher.searchAndMap(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
+                sortFields = listOf(StringSortField(FieldName, true))))
 
 
         // then
@@ -166,8 +166,8 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMap(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
-                2, listOf(StringSortField(FieldName, true)))
+        val result = searcher.searchAndMap(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
+                2, sortFields = listOf(StringSortField(FieldName, true))))
 
 
         // then
@@ -188,7 +188,7 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMapLazily(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties)
+        val result = searcher.searchAndMapLazily(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties))
 
 
         // then
@@ -208,7 +208,7 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMapLazily(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties, 2, 0)
+        val result = searcher.searchAndMapLazily(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties, 2, 0))
 
 
         // then
@@ -228,8 +228,8 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMapLazily(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
-                countResultToPreload = 0, sortFields = listOf(StringSortField(FieldName, true)))
+        val result = searcher.searchAndMapLazily(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
+                countResultToPreload = 0, sortFields = listOf(StringSortField(FieldName, true))))
 
 
         // then
@@ -249,8 +249,8 @@ abstract class SearcherTestBase : LuceneTestBase() {
 
 
         // when
-        val result = searcher.searchAndMapLazily(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
-                2, 0, listOf(StringSortField(FieldName, true)))
+        val result = searcher.searchAndMapLazily(MappedSearchConfig(queries.allDocuments(), StringTestObject::class.java, StringTestObjectProperties,
+                2, 0, listOf(StringSortField(FieldName, true))))
 
 
         // then

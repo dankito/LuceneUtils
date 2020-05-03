@@ -4,6 +4,7 @@ import net.dankito.utils.io.FileUtils
 import net.dankito.utils.lucene.mapper.PropertyDescription
 import net.dankito.utils.lucene.mapper.PropertyType
 import net.dankito.utils.lucene.search.FieldMapper
+import net.dankito.utils.lucene.search.SearchConfig
 import net.dankito.utils.lucene.search.SearchResult
 import net.dankito.utils.lucene.utils.StringTestObject
 import org.apache.lucene.index.IndexableField
@@ -194,7 +195,7 @@ abstract class LuceneTestBase {
 
 
 	protected open fun search(query: Query): List<SearchResult> {
-		val searchResults = searcher.search(query, 10)
+		val searchResults = searcher.search(SearchConfig(query, 10))
 
 		return searchResults.hits
 	}
