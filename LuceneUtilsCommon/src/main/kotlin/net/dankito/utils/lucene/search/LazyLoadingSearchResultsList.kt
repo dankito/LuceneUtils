@@ -44,7 +44,7 @@ open class LazyLoadingSearchResultsList<T>(
 
         val mappedSearchResult = mapSearchResult(documentId)
 
-        cachedSearchResults.put(documentId, mappedSearchResult)
+        cachedSearchResults.put(index, mappedSearchResult)
 
         return mappedSearchResult
     }
