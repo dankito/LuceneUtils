@@ -11,6 +11,10 @@ import org.slf4j.LoggerFactory
 abstract class SearcherBase(protected val directory: Directory) : AutoCloseable {
 
 	companion object {
+		const val DefaultCountMaxResults = 10_000
+
+		const val DefaultCountResultsToPreload = 10
+
 		private val log = LoggerFactory.getLogger(SearcherBase::class.java)
 	}
 
@@ -27,7 +31,7 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 
 
 	@JvmOverloads
-	open fun search(query: Query, countMaxResults: Int = 10_000,
+	open fun search(query: Query, countMaxResults: Int = DefaultCountMaxResults,
 					sortFields: List<SortField> = listOf()): SearchResults {
 		try {
 			val reader = DirectoryReader.open(directory)
@@ -51,7 +55,7 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 
 	@JvmOverloads
 	open fun <T> searchAndMap(query: Query, objectClass: Class<T>, properties: List<PropertyDescription>,
-							  countMaxResults: Int = 10_000, sortFields: List<SortField> = listOf()): List<T> {
+							  countMaxResults: Int = DefaultCountMaxResults, sortFields: List<SortField> = listOf()): List<T> {
 		try {
 			val reader = DirectoryReader.open(directory)
 			val searcher = IndexSearcher(reader)
@@ -74,7 +78,8 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 
 	@JvmOverloads
 	open fun <T> searchAndMapLazily(query: Query, objectClass: Class<T>, properties: List<PropertyDescription>,
-									countMaxResults: Int = 10_000, countResultToPreload: Int = 10, sortFields: List<SortField> = listOf()): List<T> {
+									countMaxResults: Int = DefaultCountMaxResults, countResultToPreload: Int = DefaultCountResultsToPreload,
+									sortFields: List<SortField> = listOf()): List<T> {
 		try {
 			val reader = DirectoryReader.open(directory)
 			val searcher = IndexSearcher(reader)
