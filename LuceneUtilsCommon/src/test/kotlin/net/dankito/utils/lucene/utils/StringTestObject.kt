@@ -1,13 +1,15 @@
 package net.dankito.utils.lucene.utils
 
+import net.dankito.utils.lucene.mapper.IdentifiableByString
 
-class StringTestObject(val name: String) {
+
+class StringTestObject(override val id: String) : IdentifiableByString {
 
     internal constructor() : this("") // for object deserializers
 
 
     override fun toString(): String {
-        return name
+        return id
     }
 
 }

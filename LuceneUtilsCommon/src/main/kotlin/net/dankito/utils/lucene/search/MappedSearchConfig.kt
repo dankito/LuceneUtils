@@ -10,12 +10,11 @@ open class MappedSearchConfig<T> @JvmOverloads constructor(
         val objectClass: Class<T>,
         val properties: List<PropertyDescription>,
         countMaxResults: Int = DefaultCountMaxResults,
-
+        sortFields: List<SortField> = listOf(),
         /**
          * Only needed when mapping lazily.
          */
-        val countResultToPreload: Int = DefaultCountResultsToPreload,
-        sortFields: List<SortField> = listOf()
+        val countResultToPreload: Int = DefaultCountResultsToPreload
 ) : SearchConfig(query, countMaxResults, sortFields) {
 
     companion object {

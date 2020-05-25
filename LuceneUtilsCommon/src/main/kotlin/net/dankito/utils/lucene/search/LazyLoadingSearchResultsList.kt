@@ -11,12 +11,11 @@ open class LazyLoadingSearchResultsList<T>(
     protected val searcher: IndexSearcher,
     protected val objectClass: Class<T>,
     protected val properties: List<PropertyDescription>,
-    countResultToPreload: Int = 10
+    countResultToPreload: Int = 10,
+    protected val mapper: ObjectMapper = ObjectMapper()
 ) : AbstractList<T>() {
 
     protected var cachedSearchResults = ConcurrentHashMap<Int, T>()
-
-    protected val mapper = ObjectMapper()
 
 
     protected val fieldsToLoad = properties.map { it.documentFieldName }.toSet()
@@ -27,6 +26,11 @@ open class LazyLoadingSearchResultsList<T>(
 
 
     init {
+        preloadResults(countResultToPreload)
+    }
+
+
+    protected open fun preloadResults(countResultToPreload: Int) {
         for (index in 0 until countResultToPreload) {
             if (index < size) {
                 get(index)

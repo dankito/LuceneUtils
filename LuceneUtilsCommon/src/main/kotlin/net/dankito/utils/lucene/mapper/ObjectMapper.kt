@@ -1,9 +1,13 @@
 package net.dankito.utils.lucene.mapper
 
+import net.dankito.utils.lucene.Constants.Companion.IdFieldName
 import net.dankito.utils.lucene.search.FieldMapper
+import net.dankito.utils.lucene.search.MapCachedSearchConfig
 import net.dankito.utils.lucene.search.SearchResult
 import net.dankito.utils.lucene.search.SearchResults
 import org.apache.lucene.document.Document
+import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.TopDocs
 import java.lang.reflect.Constructor
 
 
@@ -16,6 +20,23 @@ import java.lang.reflect.Constructor
 open class ObjectMapper {
 
     protected val fieldMapper = FieldMapper()
+
+
+    open fun <ID, T : Identifiable<ID>> mapIds(searcher: IndexSearcher, topDocs: TopDocs, config: MapCachedSearchConfig<ID, T>): Map<Int, ID> {
+        val idClass = config.objectClass.getDeclaredField("id").type as Class<ID>
+
+        return mapIds(searcher, topDocs, idClass)
+    }
+
+    open fun <ID> mapIds(searcher: IndexSearcher, topDocs: TopDocs, idClass: Class<ID>): Map<Int, ID> {
+        val itemIdFields = topDocs.scoreDocs.associate { Pair(it.doc, searcher.doc(it.doc, setOf(IdFieldName))) }
+
+        return when (idClass) {
+            String::class.java -> itemIdFields.map { Pair(it.key, fieldMapper.string(it.value, IdFieldName) as ID) }.toMap()
+            Long::class.java -> itemIdFields.map { Pair(it.key, fieldMapper.long(it.value, IdFieldName) as ID) }.toMap()
+            else -> return mapOf()
+        }
+    }
 
 
     open fun <T> map(results: SearchResults, objectClass: Class<T>, properties: List<PropertyDescription>): List<T> {

@@ -1,6 +1,7 @@
 package net.dankito.utils.lucene
 
 import net.dankito.utils.io.FileUtils
+import net.dankito.utils.lucene.Constants.Companion.IdFieldName
 import net.dankito.utils.lucene.mapper.PropertyDescription
 import net.dankito.utils.lucene.mapper.PropertyType
 import net.dankito.utils.lucene.search.FieldMapper
@@ -23,7 +24,7 @@ abstract class LuceneTestBase {
 		const val SortFieldName = FieldName + "_sorted"
 
 
-		val StringTestObjectProperties = listOf(PropertyDescription(PropertyType.String, FieldName, StringTestObject::name))
+		val StringTestObjectProperties = listOf(PropertyDescription(PropertyType.String, IdFieldName, StringTestObject::id))
 	}
 
 

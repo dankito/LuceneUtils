@@ -1,5 +1,7 @@
 package net.dankito.utils.lucene.search
 
+import net.dankito.utils.lucene.Constants.Companion.IdFieldName
+import net.dankito.utils.lucene.mapper.Identifiable
 import net.dankito.utils.lucene.mapper.ObjectMapper
 import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.search.IndexSearcher
@@ -13,10 +15,6 @@ import org.slf4j.LoggerFactory
 abstract class SearcherBase(protected val directory: Directory) : AutoCloseable {
 
 	companion object {
-		const val DefaultCountMaxResults = 10_000
-
-		const val DefaultCountResultsToPreload = 10
-
 		private val log = LoggerFactory.getLogger(SearcherBase::class.java)
 	}
 
@@ -56,12 +54,51 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 		}
 	}
 
+	open fun <ID, T : Identifiable<ID>> searchAndMapCached(config: MapCachedSearchConfig<ID, T>): List<T> {
+
+		return search(config, { listOf() }) { searcher, topDocs ->
+			val documentIdsToItemIds = mapper.mapIds(searcher, topDocs, config)
+
+			val fieldsToLoad = config.properties.map { it.documentFieldName }.toMutableSet()
+			fieldsToLoad.add(IdFieldName)
+
+			documentIdsToItemIds.map { entry ->
+				mapToItemCached(config, entry.key, entry.value, searcher, fieldsToLoad)
+			}
+		}
+	}
+
+	private fun <ID, T : Identifiable<ID>> mapToItemCached(config: MapCachedSearchConfig<ID, T>, docId: Int, itemId: ID, searcher: IndexSearcher, fieldsToLoad: MutableSet<String>): T {
+		config.cache.get(itemId)?.let {
+			return it as T
+		}
+
+		val document = searcher.doc(docId, fieldsToLoad)
+
+		val item = mapper.toObject(document, config.objectClass, config.properties)
+
+		config.cache.add(item)
+
+		return item
+	}
+
+
 	open fun <T> searchAndMapLazily(config: MappedSearchConfig<T>): List<T> {
 
 		return search(config, false, { listOf() }) { searcher, topDocs ->
 			val documentIds = topDocs.scoreDocs.map { it.doc }
 
-			LazyLoadingSearchResultsList(documentIds, searcher, config.objectClass, config.properties, config.countResultToPreload)
+			LazyLoadingSearchResultsList(documentIds, searcher, config.objectClass, config.properties, config.countResultToPreload, mapper)
+		}
+	}
+
+
+	open fun <ID, T : Identifiable<ID>> searchAndMapCachedLazily(config: MapCachedSearchConfig<ID, T>): List<T> {
+
+		return search(config, false, { listOf() }) { searcher, topDocs ->
+			val itemIds = mapper.mapIds(searcher, topDocs, config)
+
+			LazyLoadingSearchResultsListWithCache(itemIds, searcher, config.objectClass, config.properties, config.cache, config.countResultToPreload, mapper)
 		}
 	}
 

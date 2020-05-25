@@ -2,12 +2,14 @@ plugins {
     id "kotlin"
 }
 
+apply plugin: "java"
+
 
 sourceCompatibility = 1.7
 
 compileKotlin.kotlinOptions.jvmTarget = "1.6"
 
-compileTestKotlin.kotlinOptions.jvmTarget = "1.6"
+compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 
 
 ext.artifactName = "lucene-utils"
