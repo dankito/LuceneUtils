@@ -1,5 +1,8 @@
 package net.dankito.utils.lucene.index
 
+import net.dankito.utils.lucene.Constants
+import net.dankito.utils.lucene.serialization.ISerializer
+import net.dankito.utils.lucene.serialization.JacksonJsonSerializer
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.StringField
@@ -9,7 +12,16 @@ import org.apache.lucene.index.Term
 import org.apache.lucene.search.Query
 
 
-open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseable {
+abstract class DocumentsWriterBase(protected val writer: IndexWriter, protected val serializer: ISerializer = JacksonJsonSerializer()) : AutoCloseable {
+
+    abstract fun saveDocument(document: Document)
+
+    abstract fun updateDocument(findExistingDocumentTerm: Term, document: Document)
+
+    abstract fun deleteDocuments(vararg terms: Term)
+
+    abstract fun deleteDocuments(vararg queries: Query)
+
 
     override fun close() {
         val analyzer = writer.analyzer
@@ -57,10 +69,6 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
         return document
     }
 
-    open fun saveDocument(document: Document) {
-        writer.addDocument(document)
-    }
-
     open fun saveDocumentForNonNullFields(vararg fields: IndexableField?): Document {
         return saveDocument(fields.filterNotNull())
     }
@@ -72,7 +80,7 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
     open fun saveDocuments(documents: List<Document>) {
         documents.forEach { document ->
-            writer.addDocument(document)
+            saveDocument(document)
         }
     }
 
@@ -95,7 +103,7 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
         val findExistingDocumentTerm = Term(idFieldName, idFieldValue)
 
-        writer.updateDocument(findExistingDocumentTerm, document)
+        updateDocument(findExistingDocumentTerm, document)
 
         return document
     }
@@ -123,7 +131,7 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
 
 
     open fun deleteDocument(idFieldName: String, idFieldValue: String) {
-        writer.deleteDocuments(Term(idFieldName, idFieldValue))
+        deleteDocuments(Term(idFieldName, idFieldValue))
     }
 
     open fun deleteDocumentAndFlushChangesToDisk(idFieldName: String, idFieldValue: String) {
@@ -135,17 +143,13 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
     open fun deleteDocuments(idFieldName: String, vararg idFieldValues: String) {
         val terms = idFieldValues.map { Term(idFieldName, it) }
 
-        writer.deleteDocuments(*terms.toTypedArray())
+        deleteDocuments(*terms.toTypedArray())
     }
 
     open fun deleteDocumentsAndFlushChangesToDisk(idFieldName: String, vararg idFieldValues: String) {
         deleteDocuments(idFieldName, *idFieldValues)
 
         flushChangesToDisk()
-    }
-
-    open fun deleteDocuments(query: Query) {
-        writer.deleteDocuments(query)
     }
 
     open fun deleteDocumentsAndFlushChangesToDisk(query: Query) {
@@ -164,9 +168,7 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
      *
      * Be aware this is a costly operation which impacts performance. So don't call this too often.
      */
-    open fun flushChangesToDisk() {
-        writer.commit()
-    }
+    abstract fun flushChangesToDisk()
 
     /**
      * To maximize search performance, you can ask Lucene to merge its segments.
@@ -177,7 +179,7 @@ open class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseabl
      * So don't call this too often, e.g. only once per month.
      */
     open fun optimizeIndex() {
-        writer.commit()
+        flushChangesToDisk()
 
         writer.forceMerge(1)
     }
