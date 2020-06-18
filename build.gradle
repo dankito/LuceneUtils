@@ -35,3 +35,28 @@ subprojects {
         jcenter()
     }
 }
+
+
+task jarAll {
+    dependsOn = [
+        "LuceneUtilsCommon:jar",
+        "LuceneUtils:jar",
+        "Lucene4Utils:jar"
+    ]
+}
+
+task publishAllToMavenLocal {
+    dependsOn = [
+        "LuceneUtilsCommon:publishToMavenLocal",
+        "LuceneUtils:publishToMavenLocal",
+        "Lucene4Utils:publishToMavenLocal"
+    ]
+}
+
+task publishAndReleaseAll {
+    dependsOn = [
+        "LuceneUtilsCommon:publishAndRelease",
+        "LuceneUtils:publishAndRelease",
+        "Lucene4Utils:publishAndRelease"
+    ]
+}
