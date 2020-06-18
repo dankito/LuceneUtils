@@ -1,8 +1,5 @@
 package net.dankito.utils.lucene.index
 
-import net.dankito.utils.lucene.Constants
-import net.dankito.utils.lucene.serialization.ISerializer
-import net.dankito.utils.lucene.serialization.JacksonJsonSerializer
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
 import org.apache.lucene.document.StringField
@@ -12,7 +9,7 @@ import org.apache.lucene.index.Term
 import org.apache.lucene.search.Query
 
 
-abstract class DocumentsWriterBase(protected val writer: IndexWriter, protected val serializer: ISerializer = JacksonJsonSerializer()) : AutoCloseable {
+abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseable {
 
     abstract fun saveDocument(document: Document)
 
