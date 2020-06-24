@@ -38,7 +38,7 @@ abstract class QueryBuilderBase {
 			return allDocuments()
 		}
 
-		val singleTerms = searchTerm.split(" ").filter { it.isNotBlank() }
+		val singleTerms = searchTerm.split(" ", "-").filter { it.isNotBlank() }
 
 		val clauses = singleTerms.map { singleTerm ->
 			BooleanClause(createQueryForSingleTerm(singleTerm, singleTermQueryBuilder), BooleanClause.Occur.MUST)
