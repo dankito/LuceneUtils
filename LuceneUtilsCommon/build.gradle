@@ -10,6 +10,9 @@ compileKotlin.kotlinOptions.jvmTarget = "1.6"
 compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
 
 
+ext.artifactName = "lucene-utils-common"
+
+
 
 dependencies {
     api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
