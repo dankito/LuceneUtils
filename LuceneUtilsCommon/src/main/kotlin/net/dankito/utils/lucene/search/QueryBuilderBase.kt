@@ -125,13 +125,13 @@ abstract class QueryBuilderBase {
 
 	/*		Numeric Queries		*/
 
-	protected abstract fun matches(fieldName: String, value: Long): Query
+	abstract fun matches(fieldName: String, value: Long): Query
 
-	protected abstract fun greaterOrEqual(fieldName: String, value: Long): Query
+	abstract fun greaterOrEqual(fieldName: String, value: Long): Query
 
-	protected abstract fun lessOrEqual(fieldName: String, value: Long): Query
+	abstract fun lessOrEqual(fieldName: String, value: Long): Query
 
-	protected abstract fun between(fieldName: String, lowerValueInclusive: Long, upperValueInclusive: Long): Query
+	abstract fun between(fieldName: String, lowerValueInclusive: Long, upperValueInclusive: Long): Query
 
 
 	/**
