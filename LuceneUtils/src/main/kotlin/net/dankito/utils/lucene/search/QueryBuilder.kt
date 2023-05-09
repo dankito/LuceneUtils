@@ -1,5 +1,6 @@
 package net.dankito.utils.lucene.search
 
+import net.dankito.utils.lucene.extensions.storedValue
 import org.apache.lucene.document.DoublePoint
 import org.apache.lucene.document.FloatPoint
 import org.apache.lucene.document.IntPoint
@@ -7,7 +8,7 @@ import org.apache.lucene.document.LongPoint
 import org.apache.lucene.search.BooleanClause
 import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.search.Query
-import java.util.*
+import java.time.Instant
 
 
 open class QueryBuilder : QueryBuilderBase() {
@@ -85,6 +86,25 @@ open class QueryBuilder : QueryBuilderBase() {
 
 	override fun between(fieldName: String, lowerValueInclusive: Double, upperValueInclusive: Double): Query {
 		return DoublePoint.newRangeQuery(fieldName, lowerValueInclusive, upperValueInclusive)
+	}
+
+
+	/*		Date time queries		*/
+
+	open fun matches(fieldName: String, instant: Instant): Query {
+		return matches(fieldName, instant.storedValue())
+	}
+
+	open fun after(fieldName: String, dateAfterThisInclusive: Instant): Query {
+		return greaterOrEqual(fieldName, dateAfterThisInclusive.storedValue())
+	}
+
+	open fun before(fieldName: String, dateBeforeThisInclusive: Instant): Query {
+		return lessOrEqual(fieldName, dateBeforeThisInclusive.storedValue())
+	}
+
+	open fun between(fieldName: String, dateAfterThisInclusive: Instant, dateBeforeThisInclusive: Instant): Query {
+		return between(fieldName, dateAfterThisInclusive.storedValue(), dateBeforeThisInclusive.storedValue())
 	}
 
 }

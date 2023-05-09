@@ -1,7 +1,8 @@
 package net.dankito.utils.lucene.index
 
+import net.dankito.utils.lucene.extensions.storedValue
 import org.apache.lucene.document.*
-import org.apache.lucene.util.NumericUtils
+import java.time.Instant
 
 
 open class FieldBuilder : FieldBuilderBase() {
@@ -20,6 +21,27 @@ open class FieldBuilder : FieldBuilderBase() {
 
 	override fun createDoubleField(name: String, value: Double): DoublePoint {
 		return DoublePoint(name, value)
+	}
+
+
+	open fun instantField(name: String, value: Instant): Field {
+		return longField(name, value.storedValue())
+	}
+
+	open fun nullableInstantField(name: String, value: Instant?): Field? {
+		return if (value == null) null else instantField(name, value)
+	}
+
+	open fun instantField(name: String, values: List<Instant>): List<Field> {
+		return values.map { value ->
+			instantField(name, value)
+		}
+	}
+
+	open fun nullableInstantField(name: String, values: List<Instant>?): List<Field>? {
+		return values?.map { value ->
+			instantField(name, value)
+		}
 	}
 
 
