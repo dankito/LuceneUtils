@@ -33,23 +33,23 @@ open class DocumentsWriter(writer: IndexWriter) : DocumentsWriterBase(writer) {
 
 
     override fun saveDocument(document: Document) {
-        writer.addDocument(document)
+        indexWriter.addDocument(document)
     }
 
     override fun updateDocument(findExistingDocumentTerm: Term, document: Document) {
-        writer.updateDocument(findExistingDocumentTerm, document)
+        indexWriter.updateDocument(findExistingDocumentTerm, document)
     }
 
     override fun deleteDocuments(vararg terms: Term) {
-        writer.deleteDocuments(*terms)
+        indexWriter.deleteDocuments(*terms)
     }
 
     override fun deleteDocuments(vararg queries: Query) {
-        writer.deleteDocuments(*queries)
+        indexWriter.deleteDocuments(*queries)
     }
 
     override fun flushChangesToDisk() {
-        writer.commit()
+        indexWriter.commit()
     }
 
 }

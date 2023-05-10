@@ -9,7 +9,7 @@ import org.apache.lucene.index.Term
 import org.apache.lucene.search.Query
 
 
-abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoCloseable {
+abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable {
 
     abstract fun saveDocument(document: Document)
 
@@ -21,11 +21,11 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
 
 
     override fun close() {
-        val analyzer = writer.analyzer
+        val analyzer = indexWriter.analyzer
 
-        writer.close()
+        indexWriter.close()
 
-        writer.directory.close()
+        indexWriter.directory.close()
 
         analyzer.close()
     }
@@ -198,7 +198,7 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
     open fun optimizeIndex() {
         flushChangesToDisk()
 
-        writer.forceMerge(1)
+        indexWriter.forceMerge(1)
     }
 
 
