@@ -1,5 +1,9 @@
 package net.dankito.utils.lucene
 
+import net.dankito.utils.lucene.index.DocumentsWriter
+import net.dankito.utils.lucene.index.FieldBuilder
+import net.dankito.utils.lucene.search.QueryBuilder
+import net.dankito.utils.lucene.search.Searcher
 import net.dankito.utils.lucene.sort.*
 import org.apache.lucene.search.SortField
 import org.junit.jupiter.api.DisplayName
@@ -7,7 +11,7 @@ import org.junit.jupiter.api.DisplayName
 @DisplayName("Lucene4SortFieldTest")
 class SortFieldTest : SortFieldTestBase() {
 
-    override fun createInstancesCreator(): ILuceneTestInstancesCreator<*, *, *, *> {
+    override fun createInstancesCreator(): ILuceneTestInstancesCreator<FieldBuilder, DocumentsWriter, QueryBuilder, Searcher> {
         return Lucene4TestInstancesCreator()
     }
 

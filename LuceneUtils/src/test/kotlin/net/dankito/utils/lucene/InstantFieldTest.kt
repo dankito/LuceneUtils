@@ -1,7 +1,9 @@
 package net.dankito.utils.lucene
 
+import net.dankito.utils.lucene.index.DocumentsWriter
 import net.dankito.utils.lucene.index.FieldBuilder
 import net.dankito.utils.lucene.search.QueryBuilder
+import net.dankito.utils.lucene.search.Searcher
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
@@ -9,7 +11,7 @@ import java.time.ZoneOffset
 
 class InstantFieldTest: LuceneTestBase() {
 
-	override fun createInstancesCreator(): ILuceneTestInstancesCreator<*, *, *, *> {
+	override fun createInstancesCreator(): ILuceneTestInstancesCreator<FieldBuilder, DocumentsWriter, QueryBuilder, Searcher> {
 		return LuceneTestInstancesCreator()
 	}
 
