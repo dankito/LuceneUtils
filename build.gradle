@@ -28,7 +28,7 @@ if (commonScriptsFile.exists()) {
 
 
 subprojects {
-    this.group = rootProject.group
+    group = rootProject.group
 
     repositories {
         mavenCentral()
