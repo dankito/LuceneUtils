@@ -47,7 +47,7 @@ abstract class LuceneTestBase {
 
 	protected val mapper = FieldMapper()
 
-	protected val searcher = instancesCreator.createSearcher(indexDirectory)
+	protected val searcher = instancesCreator.createSearcher(writer)
 
 
 	@AfterEach

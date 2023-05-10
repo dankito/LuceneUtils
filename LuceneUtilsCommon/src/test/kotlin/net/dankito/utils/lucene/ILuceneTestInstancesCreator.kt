@@ -18,6 +18,6 @@ interface ILuceneTestInstancesCreator<FieldBuilder : FieldBuilderBase, Documents
 
     fun createQueryBuilder(): QueryBuilder
 
-    fun createSearcher(indexDirectory: File): Searcher
+    fun createSearcher(writer: DocumentsWriterBase): Searcher
 
 }

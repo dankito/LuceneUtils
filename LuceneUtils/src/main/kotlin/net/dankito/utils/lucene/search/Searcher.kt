@@ -1,5 +1,6 @@
 package net.dankito.utils.lucene.search
 
+import net.dankito.utils.lucene.index.DocumentsWriter
 import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.index.IndexReader
 import org.apache.lucene.index.IndexWriter
@@ -22,6 +23,12 @@ open class Searcher private constructor(
 	constructor(indexDirectory: Path) : this(FSDirectory.open(indexDirectory))
 
 	constructor(writer: IndexWriter) : this(null, writer)
+
+	constructor(writer: DocumentsWriter) : this(writer.indexWriter) {
+		writer.addIndexChangedListener {
+			cachedIndexReader = null
+		}
+	}
 
 
 	private var cachedIndexReader: IndexReader? = null

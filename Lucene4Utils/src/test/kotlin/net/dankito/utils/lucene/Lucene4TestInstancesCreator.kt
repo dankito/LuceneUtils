@@ -1,6 +1,7 @@
 package net.dankito.utils.lucene
 
 import net.dankito.utils.lucene.index.DocumentsWriter
+import net.dankito.utils.lucene.index.DocumentsWriterBase
 import net.dankito.utils.lucene.index.FieldBuilder
 import net.dankito.utils.lucene.search.QueryBuilder
 import net.dankito.utils.lucene.search.Searcher
@@ -22,8 +23,8 @@ class Lucene4TestInstancesCreator : ILuceneTestInstancesCreator<FieldBuilder, Do
         return QueryBuilder()
     }
 
-    override fun createSearcher(indexDirectory: File): Searcher {
-        return Searcher(indexDirectory)
+    override fun createSearcher(writer: DocumentsWriterBase): Searcher {
+        return Searcher(writer as DocumentsWriter)
     }
 
 }

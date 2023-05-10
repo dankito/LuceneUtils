@@ -7,6 +7,7 @@ import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexableField
 import org.apache.lucene.index.Term
 import org.apache.lucene.search.Query
+import java.util.concurrent.CopyOnWriteArraySet
 
 
 abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable {
@@ -18,6 +19,9 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
     abstract fun deleteDocuments(vararg terms: Term)
 
     abstract fun deleteDocuments(vararg queries: Query)
+
+
+    private val indexChangedListeners = CopyOnWriteArraySet<() -> Unit>()
 
 
     override fun close() {
@@ -75,6 +79,8 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
 
         saveDocument(document)
 
+        notifyIndexChanged()
+
         return document
     }
 
@@ -95,6 +101,8 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
         documents.forEach { document ->
             saveDocument(document)
         }
+
+        notifyIndexChanged()
     }
 
     open fun saveDocumentsAndFlushChangesToDisk(documents: Collection<Document>) {
@@ -117,6 +125,8 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
         val findExistingDocumentTerm = Term(idFieldName, idFieldValue)
 
         updateDocument(findExistingDocumentTerm, document)
+
+        notifyIndexChanged()
 
         return document
     }
@@ -149,6 +159,8 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
 
     open fun deleteDocument(idFieldName: String, idFieldValue: String) {
         deleteDocuments(Term(idFieldName, idFieldValue))
+
+        notifyIndexChanged()
     }
 
     open fun deleteDocumentAndFlushChangesToDisk(idFieldName: String, idFieldValue: String) {
@@ -161,6 +173,8 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
         val terms = idFieldValues.map { Term(idFieldName, it) }
 
         deleteDocuments(*terms.toTypedArray())
+
+        notifyIndexChanged()
     }
 
     open fun deleteDocumentsAndFlushChangesToDisk(idFieldName: String, vararg idFieldValues: String) {
@@ -173,6 +187,8 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
         deleteDocuments(query)
 
         flushChangesToDisk()
+
+        notifyIndexChanged()
     }
 
 
@@ -204,6 +220,17 @@ abstract class DocumentsWriterBase(val indexWriter: IndexWriter) : AutoCloseable
 
     protected open fun createIdField(fieldName: String, value: String): IndexableField {
         return StringField(fieldName, value, Field.Store.YES)
+    }
+
+
+    fun addIndexChangedListener(listener: () -> Unit) {
+        this.indexChangedListeners.add(listener)
+    }
+
+    private fun notifyIndexChanged() {
+        ArrayList(indexChangedListeners).forEach { listener ->
+            listener()
+        }
     }
 
 }
