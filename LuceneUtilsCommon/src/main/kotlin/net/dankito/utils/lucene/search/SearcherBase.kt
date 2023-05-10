@@ -3,30 +3,29 @@ package net.dankito.utils.lucene.search
 import net.dankito.utils.lucene.Constants.Companion.IdFieldName
 import net.dankito.utils.lucene.mapper.Identifiable
 import net.dankito.utils.lucene.mapper.ObjectMapper
-import org.apache.lucene.index.DirectoryReader
+import org.apache.lucene.index.IndexReader
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.Sort
 import org.apache.lucene.search.TopDocs
-import org.apache.lucene.store.Directory
 import org.slf4j.LoggerFactory
 
 
-abstract class SearcherBase(protected val directory: Directory) : AutoCloseable {
+abstract class SearcherBase : AutoCloseable {
 
-	companion object {
-		private val log = LoggerFactory.getLogger(SearcherBase::class.java)
-	}
 
+	abstract fun getIndexReader(): IndexReader
 
 	protected abstract fun getCountTotalHits(topDocs: TopDocs): Long
 
 
 	protected val mapper = ObjectMapper()
 
+	private val log = LoggerFactory.getLogger(SearcherBase::class.java)
+
 
 	override fun close() {
-		directory.close()
+		getIndexReader().close()
 	}
 
 
@@ -105,13 +104,12 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 
 	protected open fun <T> search(config: SearchConfig, errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
 		try {
-			val reader = DirectoryReader.open(directory)
-			val searcher = IndexSearcher(reader)
+			val indexSearcher = IndexSearcher(getIndexReader())
 
-			val topDocs = if (config.hasNoSortFields) searcher.search(config.query, config.countMaxResults)
-			else searcher.search(config.query, config.countMaxResults, Sort(*config.sortFields.toTypedArray()))
+			val topDocs = if (config.hasNoSortFields) indexSearcher.search(config.query, config.countMaxResults)
+				else indexSearcher.search(config.query, config.countMaxResults, Sort(*config.sortFields.toTypedArray()))
 
-			return mapper(searcher, topDocs)
+			return mapper(indexSearcher, topDocs)
 		} catch (e: Exception) {
 			log.error("Could not execute query ${config.query}", e)
 
