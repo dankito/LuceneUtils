@@ -1,5 +1,5 @@
 rootProject.group = "net.dankito.search"
-rootProject.version = "0.6.1-SNAPSHOT"
+rootProject.version = "0.6.1"
 
 ext {
     sourceCodeRepositoryBaseUrl = "github.com/dankito/LuceneUtils"
