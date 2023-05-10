@@ -19,7 +19,9 @@ abstract class SearcherBase : AutoCloseable {
 	protected abstract fun getCountTotalHits(topDocs: TopDocs): Long
 
 
-	protected val mapper = ObjectMapper()
+	protected val fieldMapper = FieldMapper()
+
+	protected val mapper = ObjectMapper(fieldMapper)
 
 	private val log = LoggerFactory.getLogger(SearcherBase::class.java)
 
@@ -67,7 +69,7 @@ abstract class SearcherBase : AutoCloseable {
 		}
 	}
 
-	private fun <ID, T : Identifiable<ID>> mapToItemCached(config: MapCachedSearchConfig<ID, T>, docId: Int, itemId: ID, searcher: IndexSearcher, fieldsToLoad: MutableSet<String>): T {
+	protected open fun <ID, T : Identifiable<ID>> mapToItemCached(config: MapCachedSearchConfig<ID, T>, docId: Int, itemId: ID, searcher: IndexSearcher, fieldsToLoad: MutableSet<String>): T {
 		config.cache.get(itemId)?.let {
 			return it as T
 		}

@@ -17,9 +17,7 @@ import java.lang.reflect.Constructor
  * But adds quite a lot of runtime overhead as it's using reflection to instantiate objects and set property values.
  * Approximately doubles mapping time on Android compared to creating objects directly.
  */
-open class ObjectMapper {
-
-    protected val fieldMapper = FieldMapper()
+open class ObjectMapper(protected val fieldMapper: FieldMapper = FieldMapper()) {
 
 
     open fun <ID, T : Identifiable<ID>> mapIds(searcher: IndexSearcher, topDocs: TopDocs, config: MapCachedSearchConfig<ID, T>): Map<Int, ID> {
