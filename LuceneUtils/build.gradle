@@ -38,3 +38,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
     from { project(":LuceneUtilsCommon").sourceSets.main.allSource }
 }
+
+test {
+    useJUnitPlatform()
+}
