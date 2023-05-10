@@ -83,6 +83,15 @@ abstract class FieldBuilderBase {
 	}
 
 	@JvmOverloads
+	open fun keywordField(name: String, value: String, store: Boolean = true, sortable: Boolean = false): List<Field> {
+		return mutableListOf<Field>(stringField(name, value, store)).apply {
+			if (sortable) {
+				add(sortField(name, value))
+			}
+		}
+	}
+
+	@JvmOverloads
 	open fun nullableKeywordField(name: String, value: String?, store: Boolean = true): StringField? {
 		return if (value == null) null else keywordField(name, value, store)
 	}
@@ -136,6 +145,18 @@ abstract class FieldBuilderBase {
 		return createIntField(name, value)
 	}
 
+	@JvmOverloads
+	open fun intField(name: String, value: Int, store: Boolean = false, sortable: Boolean = false): List<Field> {
+		return mutableListOf(intField(name, value)).apply {
+			if (store) {
+				add(storedField(name, value))
+			}
+			if (sortable) {
+				add(sortField(name, value))
+			}
+		}
+	}
+
 	open fun nullableIntField(name: String, value: Int?): Field? {
 		return if (value == null) null else intField(name, value)
 	}
@@ -155,6 +176,18 @@ abstract class FieldBuilderBase {
 
 	open fun longField(name: String, value: Long): Field {
 		return createLongField(name, value)
+	}
+
+	@JvmOverloads
+	open fun longField(name: String, value: Long, store: Boolean = false, sortable: Boolean = false): List<Field> {
+		return mutableListOf(longField(name, value)).apply {
+			if (store) {
+				add(storedField(name, value))
+			}
+			if (sortable) {
+				add(sortField(name, value))
+			}
+		}
 	}
 
 	open fun nullableLongField(name: String, value: Long?): Field? {
@@ -178,6 +211,18 @@ abstract class FieldBuilderBase {
 		return createFloatField(name, value)
 	}
 
+	@JvmOverloads
+	open fun floatField(name: String, value: Float, store: Boolean = false, sortable: Boolean = false): List<Field> {
+		return mutableListOf(floatField(name, value)).apply {
+			if (store) {
+				add(storedField(name, value))
+			}
+			if (sortable) {
+				add(sortField(name, value))
+			}
+		}
+	}
+
 	open fun nullableFloatField(name: String, value: Float?): Field? {
 		return if (value == null) null else floatField(name, value)
 	}
@@ -199,6 +244,18 @@ abstract class FieldBuilderBase {
 		return createDoubleField(name, value)
 	}
 
+	@JvmOverloads
+	open fun doubleField(name: String, value: Double, store: Boolean = false, sortable: Boolean = false): List<Field> {
+		return mutableListOf(doubleField(name, value)).apply {
+			if (store) {
+				add(storedField(name, value))
+			}
+			if (sortable) {
+				add(sortField(name, value))
+			}
+		}
+	}
+
 	open fun nullableDoubleField(name: String, value: Double?): Field? {
 		return if (value == null) null else doubleField(name, value)
 	}
@@ -218,6 +275,18 @@ abstract class FieldBuilderBase {
 
 	open fun dateField(name: String, value: Date): Field {
 		return longField(name, value.time)
+	}
+
+	@JvmOverloads
+	open fun dateField(name: String, value: Date, store: Boolean = false, sortable: Boolean = false): List<Field> {
+		return mutableListOf(dateField(name, value)).apply {
+			if (store) {
+				add(storedField(name, value))
+			}
+			if (sortable) {
+				add(sortField(name, value))
+			}
+		}
 	}
 
 	open fun nullableDateField(name: String, value: Date?): Field? {
@@ -245,7 +314,19 @@ abstract class FieldBuilderBase {
 	 */
 	@JvmOverloads
 	open fun bigDecimalField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision): Field {
-		return longField(name, mapToLong(value, precision))
+		return longField(name, storedValue(value, precision))
+	}
+
+	@JvmOverloads
+	open fun bigDecimalField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision, store: Boolean = false, sortable: Boolean = false): List<Field> {
+		return mutableListOf(bigDecimalField(name, value, precision)).apply {
+			if (store) {
+				add(storedField(name, value, precision))
+			}
+			if (sortable) {
+				add(sortField(name, value, precision))
+			}
+		}
 	}
 
 	/**
@@ -420,7 +501,7 @@ abstract class FieldBuilderBase {
 	 */
 	@JvmOverloads
 	open fun storedField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision): StoredField {
-		return storedField(name, mapToLong(value, precision))
+		return storedField(name, storedValue(value, precision))
 	}
 
 	/**
@@ -463,7 +544,7 @@ abstract class FieldBuilderBase {
 		}
 	}
 
-	protected open fun mapToLong(value: BigDecimal, precision: Int): Long {
+	protected open fun storedValue(value: BigDecimal, precision: Int): Long {
 		return value.scaleByPowerOfTen(precision).toLong()
 	}
 
@@ -494,6 +575,10 @@ abstract class FieldBuilderBase {
 
 	open fun sortField(name: String, value: Date): Field {
 		return sortField(name, value.time)
+	}
+
+	open fun sortField(name: String, value: BigDecimal, precision: Int = DefaultBigDecimalPrecision): Field {
+		return sortField(name, storedValue(value, precision))
 	}
 
 }

@@ -28,6 +28,18 @@ open class FieldBuilder : FieldBuilderBase() {
 		return longField(name, value.storedValue())
 	}
 
+	@JvmOverloads
+	open fun instantField(name: String, value: Instant, store: Boolean = false, sortable: Boolean = false): List<Field> {
+		return mutableListOf(instantField(name, value)).apply {
+			if (store) {
+				add(storedField(name, value))
+			}
+			if (sortable) {
+				add(sortField(name, value))
+			}
+		}
+	}
+
 	open fun nullableInstantField(name: String, value: Instant?): Field? {
 		return if (value == null) null else instantField(name, value)
 	}
@@ -45,8 +57,17 @@ open class FieldBuilder : FieldBuilderBase() {
 	}
 
 
+	open fun storedField(name: String, value: Instant): StoredField {
+		return storedField(name, value.storedValue())
+	}
+
+
 	override fun sortField(name: String, value: Long): Field {
 		return SortedNumericDocValuesField(name, value)
+	}
+
+	open fun sortField(name: String, value: Instant): Field {
+		return sortField(name, value.storedValue())
 	}
 
 }
