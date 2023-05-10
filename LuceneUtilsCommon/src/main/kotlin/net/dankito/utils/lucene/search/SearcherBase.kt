@@ -85,7 +85,7 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 
 	open fun <T> searchAndMapLazily(config: MappedSearchConfig<T>): List<T> {
 
-		return search(config, false, { listOf() }) { searcher, topDocs ->
+		return search(config, { listOf() }) { searcher, topDocs ->
 			val documentIds = topDocs.scoreDocs.map { it.doc }
 
 			LazyLoadingSearchResultsList(documentIds, searcher, config.objectClass, config.properties, config.countResultToPreload, mapper)
@@ -95,7 +95,7 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 
 	open fun <ID, T : Identifiable<ID>> searchAndMapCachedLazily(config: MapCachedSearchConfig<ID, T>): List<T> {
 
-		return search(config, false, { listOf() }) { searcher, topDocs ->
+		return search(config, { listOf() }) { searcher, topDocs ->
 			val itemIds = mapper.mapIds(searcher, topDocs, config)
 
 			LazyLoadingSearchResultsListWithCache(itemIds, searcher, config.objectClass, config.properties, config.cache, config.countResultToPreload, mapper)
@@ -103,14 +103,7 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 	}
 
 
-	protected open fun <T> search(config: SearchConfig,
-								  errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
-
-		return search(config, true, errorOccurred, mapper)
-	}
-
-	protected open fun <T> search(config: SearchConfig, closeReader: Boolean = true,
-								  errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
+	protected open fun <T> search(config: SearchConfig, errorOccurred: (Exception) -> T, mapper: (IndexSearcher, TopDocs) -> T): T {
 		try {
 			val reader = DirectoryReader.open(directory)
 			val searcher = IndexSearcher(reader)
@@ -118,13 +111,7 @@ abstract class SearcherBase(protected val directory: Directory) : AutoCloseable 
 			val topDocs = if (config.hasNoSortFields) searcher.search(config.query, config.countMaxResults)
 			else searcher.search(config.query, config.countMaxResults, Sort(*config.sortFields.toTypedArray()))
 
-			val result = mapper(searcher, topDocs)
-
-			if (closeReader) {
-				reader.close()
-			}
-
-			return result
+			return mapper(searcher, topDocs)
 		} catch (e: Exception) {
 			log.error("Could not execute query ${config.query}", e)
 
