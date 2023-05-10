@@ -2,8 +2,9 @@ package net.dankito.utils.lucene
 
 import net.dankito.utils.lucene.sort.*
 import org.apache.lucene.search.SortField
+import org.junit.jupiter.api.DisplayName
 
-
+@DisplayName("Lucene4SortFieldTest")
 class SortFieldTest : SortFieldTestBase() {
 
     override fun createInstancesCreator(): ILuceneTestInstancesCreator<*, *, *, *> {
