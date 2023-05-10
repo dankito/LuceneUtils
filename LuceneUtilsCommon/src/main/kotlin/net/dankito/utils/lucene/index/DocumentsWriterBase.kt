@@ -35,7 +35,11 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
         return createDocument(fields.toList())
     }
 
-    open fun createDocument(fields: List<IndexableField>): Document {
+    open fun createDocument(vararg fields: Collection<IndexableField>): Document {
+        return createDocument(fields.toList().flatten())
+    }
+
+    open fun createDocument(fields: Collection<IndexableField>): Document {
         val document = Document()
 
         fields.forEach { field ->
@@ -49,7 +53,11 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
         return createDocument(fields.filterNotNull())
     }
 
-    open fun createDocumentForNonNullFields(fields: List<IndexableField?>): Document {
+    open fun createDocumentForNonNullFields(vararg fields: Collection<IndexableField?>): Document {
+        return createDocument(fields.toList().flatten().filterNotNull())
+    }
+
+    open fun createDocumentForNonNullFields(fields: Collection<IndexableField?>): Document {
         return createDocument(fields.filterNotNull())
     }
 
@@ -58,7 +66,11 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
         return saveDocument(fields.toList())
     }
 
-    open fun saveDocument(fields: List<IndexableField>): Document {
+    open fun saveDocument(vararg fields: Collection<IndexableField>): Document {
+        return saveDocument(fields.toList().flatten())
+    }
+
+    open fun saveDocument(fields: Collection<IndexableField>): Document {
         val document = createDocument(fields)
 
         saveDocument(document)
@@ -70,18 +82,22 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
         return saveDocument(fields.filterNotNull())
     }
 
-    open fun saveDocumentForNonNullFields(fields: List<IndexableField?>): Document {
+    open fun saveDocumentForNonNullFields(vararg fields: Collection<IndexableField?>): Document {
+        return saveDocument(fields.toList().flatten().filterNotNull())
+    }
+
+    open fun saveDocumentForNonNullFields(fields: Collection<IndexableField?>): Document {
         return saveDocument(fields.filterNotNull())
     }
 
 
-    open fun saveDocuments(documents: List<Document>) {
+    open fun saveDocuments(documents: Collection<Document>) {
         documents.forEach { document ->
             saveDocument(document)
         }
     }
 
-    open fun saveDocumentsAndFlushChangesToDisk(documents: List<Document>) {
+    open fun saveDocumentsAndFlushChangesToDisk(documents: Collection<Document>) {
         saveDocuments(documents)
 
         flushChangesToDisk()
@@ -92,7 +108,7 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
         return updateDocument(idFieldName, idFieldValue, fields.toList())
     }
 
-    open fun updateDocument(idFieldName: String, idFieldValue: String, fields: List<IndexableField>): Document {
+    open fun updateDocument(idFieldName: String, idFieldValue: String, fields: Collection<IndexableField>): Document {
         val fieldsIncludingIdField = mutableListOf(createIdField(idFieldName, idFieldValue))
         fieldsIncludingIdField.addAll(fields)
 
@@ -106,7 +122,11 @@ abstract class DocumentsWriterBase(protected val writer: IndexWriter) : AutoClos
     }
 
     open fun updateDocumentForNonNullFields(idFieldName: String, idFieldValue: String, vararg fields: IndexableField?): Document {
-        return updateDocument(idFieldName, idFieldValue, *fields.filterNotNull().toTypedArray())
+        return updateDocument(idFieldName, idFieldValue, fields.filterNotNull())
+    }
+
+    open fun updateDocumentForNonNullFields(idFieldName: String, idFieldValue: String, vararg fields: Collection<IndexableField?>): Document {
+        return updateDocument(idFieldName, idFieldValue, fields.toList().flatten().filterNotNull())
     }
 
     /**
