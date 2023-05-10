@@ -65,40 +65,40 @@ abstract class QueryBuilderBase {
 	}
 
 	@JvmOverloads
-	open fun exact(fieldName: String, searchTerm: String, caseInsensitive: Boolean = false): Query {
-		return TermQuery(Term(fieldName, if (caseInsensitive) searchTerm.toLowerCase() else searchTerm))
+	open fun exact(fieldName: String, searchTerm: String, ignoreCase: Boolean = false): Query {
+		return TermQuery(Term(fieldName, if (ignoreCase) searchTerm.toLowerCase() else searchTerm))
 	}
 
 	@JvmOverloads
-	open fun startsWith(fieldName: String, searchTerm: String, caseInsensitive: Boolean = true): Query {
-		return wildcardQuery(fieldName, searchTerm, caseInsensitive, true, false)
+	open fun startsWith(fieldName: String, searchTerm: String, ignoreCase: Boolean = true): Query {
+		return wildcardQuery(fieldName, searchTerm, ignoreCase, true, false)
 	}
 
 	@JvmOverloads
-	open fun contains(fieldName: String, searchTerm: String, caseInsensitive: Boolean = true): Query {
-		return wildcardQuery(fieldName, searchTerm, caseInsensitive)
+	open fun contains(fieldName: String, searchTerm: String, ignoreCase: Boolean = true): Query {
+		return wildcardQuery(fieldName, searchTerm, ignoreCase)
 	}
 
 	@JvmOverloads
-	open fun endsWith(fieldName: String, searchTerm: String, caseInsensitive: Boolean = true): Query {
-		return wildcardQuery(fieldName, searchTerm, caseInsensitive, false, true)
+	open fun endsWith(fieldName: String, searchTerm: String, ignoreCase: Boolean = true): Query {
+		return wildcardQuery(fieldName, searchTerm, ignoreCase, false, true)
 	}
 
 	@JvmOverloads
-	open fun wildcardQuery(fieldName: String, searchTerm: String, caseInsensitive: Boolean = true): Query {
-		return wildcardQuery(fieldName, searchTerm, caseInsensitive, true, true)
+	open fun wildcardQuery(fieldName: String, searchTerm: String, ignoreCase: Boolean = true): Query {
+		return wildcardQuery(fieldName, searchTerm, ignoreCase, true, true)
 	}
 
-	open fun wildcardQuery(fieldName: String, searchTerm: String, caseInsensitive: Boolean ,
+	open fun wildcardQuery(fieldName: String, searchTerm: String, ignoreCase: Boolean,
 						   prefixWildcard: Boolean, suffixWildcard: Boolean): Query {
-		val adjustedSearchTerm = adjustSearchTermForWildcardQuery(searchTerm, caseInsensitive, prefixWildcard, suffixWildcard)
+		val adjustedSearchTerm = adjustSearchTermForWildcardQuery(searchTerm, ignoreCase, prefixWildcard, suffixWildcard)
 
 		return WildcardQuery(Term(fieldName, adjustedSearchTerm))
 	}
 
-	protected open fun adjustSearchTermForWildcardQuery(searchTerm: String, caseInsensitive: Boolean,
+	protected open fun adjustSearchTermForWildcardQuery(searchTerm: String, ignoreCase: Boolean,
 														prefixWildcard: Boolean, suffixWildcard: Boolean): String {
-		val adjustedSearchTerm = adjustSearchTerm(searchTerm, caseInsensitive)
+		val adjustedSearchTerm = adjustSearchTerm(searchTerm, ignoreCase)
 
 		if (prefixWildcard && suffixWildcard) {
 			return "*$adjustedSearchTerm*"
@@ -111,10 +111,10 @@ abstract class QueryBuilderBase {
 		}
 	}
 
-	protected open fun adjustSearchTerm(searchTerm: String, caseInsensitive: Boolean): String {
+	protected open fun adjustSearchTerm(searchTerm: String, ignoreCase: Boolean): String {
 		val adjustedSearchTerm = QueryParser.escape(searchTerm)
 
-		return if (caseInsensitive) {
+		return if (ignoreCase) {
 			adjustedSearchTerm.toLowerCase()
 		}
 		else {

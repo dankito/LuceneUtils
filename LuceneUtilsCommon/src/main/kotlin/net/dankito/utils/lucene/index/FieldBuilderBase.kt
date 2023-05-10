@@ -469,8 +469,8 @@ abstract class FieldBuilderBase {
 
 
 	@JvmOverloads
-	open fun sortField(name: String, value: String, caseInsensitive: Boolean = true): SortedDocValuesField {
-		val adjustedValue = if (caseInsensitive) value.toLowerCase() else value
+	open fun sortField(name: String, value: String, ignoreCase: Boolean = true): SortedDocValuesField {
+		val adjustedValue = if (ignoreCase) value.toLowerCase() else value
 
 		return SortedDocValuesField(name, BytesRef(adjustedValue))
 	}
